@@ -3,12 +3,12 @@ TABLE_SIZE = [8, 8]
 table = []
 
 EMPTY = 0
-PAWN = 1
-ROOK = 2
-KNIGHT = 3
-BISHOP = 4
-KING = 5
-QUEEN = 6
+PAWN = 1 # done
+ROOK = 2 # done
+KNIGHT = 3 # done
+BISHOP = 4 # done
+KING = 5 # done
+QUEEN = 6 #
 
 NO_ONE = 0
 WHITE = 1
@@ -137,6 +137,8 @@ def rook_check(_table, owner, p1, p2):
 def pawn_check(_table, owner, p1, p2):
     delta_row = p2[0] - p1[0]
     delta_column = p2[1] - p1[1]
+    if p1 == p2:
+        return False
     # Checking for double move
     if owner == WHITE and p1[0] != 1 and abs(delta_row) > 1:
         return False
@@ -183,6 +185,8 @@ def king_check(_table, owner, p1, p2):
         return False
     if abs(delta_column) > 1:
         return False
+    if p1 == p2:
+        return False
     return True
 
 def knight_check(_table, owner, p1, p2):
@@ -199,4 +203,62 @@ def knight_check(_table, owner, p1, p2):
         return False
     if table[p2[0]][p2[1]][0] == owner:
         return False
+    if p1 == p2:
+        return False
+    return True
+
+
+def bishop_check(_table, owner, p1, p2):
+    # Checking table limits
+    if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        return False
+    if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
+        return False
+    delta_row = p2[0] - p1[0]
+    delta_column = p2[1] - p1[1]
+    delta_row_s = abs(delta_row)/delta_row
+    delta_column_s = abs(delta_column)/delta_column
+    if abs(delta_row/delta_column) != 1:
+        return False
+    if p1 == p2:
+        return False
+    if table[p2[0]][p2[1]][0] == owner:
+        return False
+    for i in range(1,abs(delta_row)):
+        _x = (i*delta_row_s)+p1[0]
+        _y = (i*delta_column_s)+p1[1]
+        if _table[_x][_y][0] != EMPTY:
+            return False
+    return True
+
+
+def queen_check(_table, owner, p1, p2):
+    # Checking table limits
+    if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        return False
+    if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
+        return False
+    delta_row = p2[0] - p1[0]
+    delta_column = p2[1] - p1[1]
+    delta_row_s = abs(delta_row)/delta_row
+    delta_column_s = abs(delta_column)/delta_column
+    if p1 == p2:
+        return False
+    if table[p2[0]][p2[1]][0] == owner:
+        return False
+    if delta_row == 0:
+        delta_s = int(delta_column / abs(delta_column))
+        for i in range(p1[1] + delta_s, p2[1], delta_s):
+            if _table[p2[0]][i][0] != NO_ONE:
+                return False
+    if delta_column == 0:
+        delta_s = int(delta_row / abs(delta_row))
+        for i in range(p1[0] + delta_s, p2[0], delta_s):
+            if _table[i][p2[1]][0] != NO_ONE:
+                return False
+    for i in range(1,abs(delta_row)):
+        _x = (i*delta_row_s)+p1[0]
+        _y = (i*delta_column_s)+p1[1]
+        if _table[_x][_y][0] != EMPTY:
+            return False
     return True
