@@ -3,12 +3,12 @@ TABLE_SIZE = [8, 8]
 table = []
 
 EMPTY = 0
-PAWN = 1 # done
-ROOK = 2 # done
-KNIGHT = 3 # done
-BISHOP = 4 # done
-KING = 5 # done
-QUEEN = 6 #
+PAWN = 1  # done
+ROOK = 2  # done
+KNIGHT = 3  # done
+BISHOP = 4  # done
+KING = 5  # done
+QUEEN = 6  #
 
 NO_ONE = 0
 WHITE = 1
@@ -47,9 +47,6 @@ def add_pieces():
     table[7][3] = [BLACK, QUEEN]
     table[7][4] = [BLACK, KING]
 
-    # ADD ROOK ON (5, 4) -> e6
-    table[5][4] = [BLACK, ROOK]
-
 
 # SIGNO DE UN NÚMERO (SI ES CERO -> CERO)
 # muy pero que muy útil
@@ -79,25 +76,26 @@ def king_pos(color):
 def is_check(color):
     king_i = king_pos(color)[0]
     king_j = king_pos(color)[1]
-    #checar al rey en todas las direcciones
-    #columna
-    for i in range():
-        print(m)
-        # la potencia no altera la cuenta, a menos que delta sea cero
-        # si delta es cero (el Rey está en la misma columna que nuestra pieza) -> el bucle no se efectuará
-        # si delta es positivo (el Rey está a la derecha) -> se repite j veces (coincide con el número de casillas
-        # que quedan a la izqda.
-        # si delta es negativo (el Rey está a la izquierda) -> se repite 7 - j veces (el número de casillas que
-        # quedan a la derecha).
-        tile = table[i - sign(delta2) * (m + 1)][j - sign(delta(m + 1))]
-        if tile != [NO_ONE, EMPTY]:
-            return False  # hay otra pieza antes de toparnos con la reina o con la torre/alfil.
-        elif abs(delta) != abs(delta):  # si es en horizontal o vertical
-            if tile == [-color + 1, ROOK] or [-color + 1, QUEEN]:
-                return True  # hay una torre o reina y la pieza está justo entre el Rey y aquella.
-        else:
-            if tile == [-color + 1, BISHOP] or [-color + 1, QUEEN]:
-                return True  # hay un alfil o reina y la pieza está justo entre el Rey y aquella.
+    # checar al rey en todas las direcciones
+    # COLUMNAS Y DIAGONALES - reinas, torres y alfiles
+    for n in range(-3, 4):  # bucle de 8 iteraciones, cada una es una dirección
+        for m in range(7):  # revisará como mucho 7 casillas en cada dirección
+            tile = table[king_i + sign(n) * (m + 1)][king_j + sign(-(n ** 2) + (7/2) * abs(n) - (5/2)) * (m + 1)]
+            # la casilla que vamos a revisar se calcula de la siguiente manera:
+            # N ES UN NÚMERO DEL -3 AL 4: en las 3 primeras iteraciones del bucle primario restaremos 1 a la coord. i
+            # (ya que n será negativo), es decir, iremos verificando todas las casillas hacia abajo;
+            # como la función del indice j es positiva en 2 y en -2 y cero en 1 y -1, nos facilita mucho el trabajo
+            # la primera iteración será hacia abajo a secas, la segunda en diagonal hacia la derecha,
+            # la tercera en diagonal hacia la izquerda, la cuarta será hacia arriba, etc.
+            # el
+            if tile != [NO_ONE, EMPTY]:
+                return False  # hay otra pieza antes de toparnos con la reina o con la torre/alfil.
+            elif abs(delta) != abs(delta):  # si es en horizontal o vertical
+                if tile == [-color + 1, ROOK] or [-color + 1, QUEEN]:
+                    return True  # hay una torre o reina y la pieza está justo entre el Rey y aquella.
+            else:
+                if tile == [-color + 1, BISHOP] or [-color + 1, QUEEN]:
+                    return True  # hay un alfil o reina y la pieza está justo entre el Rey y aquella.
     else:
         return False  # el Rey no está en ninguna dirección que coincida con la pieza
 
@@ -189,6 +187,7 @@ def king_check(_table, owner, p1, p2):
         return False
     return True
 
+
 def knight_check(_table, owner, p1, p2):
     # Checking table limits
     if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
@@ -197,7 +196,7 @@ def knight_check(_table, owner, p1, p2):
         return False
     delta_row = p2[0] - p1[0]
     delta_column = p2[1] - p1[1]
-    if not ((abs(delta_row)/abs(delta_column) == 0.5) or (abs(delta_row)/abs(delta_column) == 2)):
+    if not ((abs(delta_row) / abs(delta_column) == 0.5) or (abs(delta_row) / abs(delta_column) == 2)):
         return False
     if abs(delta_row) > 2 or abs(delta_column) > 2:
         return False
@@ -216,17 +215,17 @@ def bishop_check(_table, owner, p1, p2):
         return False
     delta_row = p2[0] - p1[0]
     delta_column = p2[1] - p1[1]
-    delta_row_s = abs(delta_row)/delta_row
-    delta_column_s = abs(delta_column)/delta_column
-    if abs(delta_row/delta_column) != 1:
+    delta_row_s = abs(delta_row) / delta_row
+    delta_column_s = abs(delta_column) / delta_column
+    if abs(delta_row / delta_column) != 1:
         return False
     if p1 == p2:
         return False
     if table[p2[0]][p2[1]][0] == owner:
         return False
-    for i in range(1,abs(delta_row)):
-        _x = (i*delta_row_s)+p1[0]
-        _y = (i*delta_column_s)+p1[1]
+    for i in range(1, abs(delta_row)):
+        _x = (i * delta_row_s) + p1[0]
+        _y = (i * delta_column_s) + p1[1]
         if _table[_x][_y][0] != EMPTY:
             return False
     return True
@@ -240,8 +239,8 @@ def queen_check(_table, owner, p1, p2):
         return False
     delta_row = p2[0] - p1[0]
     delta_column = p2[1] - p1[1]
-    delta_row_s = abs(delta_row)/delta_row
-    delta_column_s = abs(delta_column)/delta_column
+    delta_row_s = abs(delta_row) / delta_row
+    delta_column_s = abs(delta_column) / delta_column
     if p1 == p2:
         return False
     if table[p2[0]][p2[1]][0] == owner:
@@ -256,9 +255,9 @@ def queen_check(_table, owner, p1, p2):
         for i in range(p1[0] + delta_s, p2[0], delta_s):
             if _table[i][p2[1]][0] != NO_ONE:
                 return False
-    for i in range(1,abs(delta_row)):
-        _x = (i*delta_row_s)+p1[0]
-        _y = (i*delta_column_s)+p1[1]
+    for i in range(1, abs(delta_row)):
+        _x = (i * delta_row_s) + p1[0]
+        _y = (i * delta_column_s) + p1[1]
         if _table[_x][_y][0] != EMPTY:
             return False
     return True
