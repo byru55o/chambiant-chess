@@ -263,6 +263,7 @@ def queen_check(_table, owner, p1, p2):
     delta_column = p2[1] - p1[1]
     delta_row_s = abs(delta_row) / delta_row
     delta_column_s = abs(delta_column) / delta_column
+    # Checking if it does not move
     if p1 == p2:
         return False
     if table[p2[0]][p2[1]][0] == owner:
