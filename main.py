@@ -79,8 +79,10 @@ def is_check(color):
     # checar al rey en todas las direcciones
     # COLUMNAS Y DIAGONALES - reinas, torres y alfiles
     for n in range(-3, 4):  # bucle de 8 iteraciones, cada una es una dirección
+        # print(f"ENTERING FIRST N ITERATION: N = {n}")
         anulate_if_n_is_four = sign(abs(n-4))
         for m in range(7):  # revisará como mucho 7 casillas en cada dirección
+            # print(f"ENTERING FIRST M ITERATION: M = {m}")
             tile = table[king_i+anulate_if_n_is_four*sign(n)*(m+1)][king_j+sign(-(n**2)+(7/2)*abs(n)-(5/2))*(m+1)]
             # la casilla que vamos a revisar se calcula de la siguiente manera:
             # N ES UN NÚMERO DEL -3 AL 4: en las 3 primeras iteraciones del bucle primario restaremos 1 a la coord. i
@@ -91,22 +93,33 @@ def is_check(color):
             # el único caso con el que no obtenemos lo que queremos es con n = 4, donde queremos que revise la dcha.
             # por eso multiplicamos por una expresión que es cero cuando n = 4 y uno de lo contrario.
             if abs(n) in range(2, 4):  # si lo que estamos comprobando es una diagonal
-                if tile[0] == -color+1 and list[1] == BISHOP or QUEEN:
+                # print("comprobando alfil")
+                if tile[0] == -color+3 and (tile[1] == BISHOP or QUEEN):
                     # y lo que hay en la casilla es es un alfil o reina de color opuesto...
                     return True
                 else:  # si hay cualquier otra cosa, salimos del bucle, debemos pasar a revisar la siguiente dirección
                     continue
             else:  # si lo que estamos comprobando es fila o columna
-                if tile[0] == -color+1 and list[1] == ROOK or QUEEN:
+                # print("comprobando torre")
+                if tile[0] == -color+3 and (tile[1] == ROOK or QUEEN):
                     return True
                 else:
                     continue
     # CABALLO (falta por explicar)
     for n in range(8):
+        print(f"ENTERING SECOND N ITERATION: N = {n}")
         tile = table[king_i+((n//2)-4)][(int(n/2-n//2)-1)*(sign(-abs(n-4)+1.5)*sign(n+1)+1)]
-        if tile == [-color+1, KNIGHT]:
+        if tile == [-color+3, KNIGHT]:
             return True
     # PEONES
+    for n in range(2):
+        print(f"ENTERING THIRD N ITERATION: N = {n}")
+        tile = table[king_i-(2*color)+3][king_j+(2*n-1)]
+        # la casilla que revisa es: índice i -> una más o menos que el índice del rey, dependiendo del color de éste
+        # indice j -> una a la izqda. o dcha. dependiendo de la iteración (si es cero será una a la izqda. y viceversa)
+        if tile == [-color+3, PAWN]:
+            return True
+    return False
 
 
 def rook_check(_table, owner, p1, p2):
@@ -270,3 +283,10 @@ def queen_check(_table, owner, p1, p2):
         if _table[_x][_y][0] != EMPTY:
             return False
     return True
+
+
+generate_new_table()
+table[0][0] = [WHITE, KING]
+# table[1][2] = [BLACK, KNIGHT]
+
+print(is_check(WHITE))
