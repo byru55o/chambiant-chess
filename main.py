@@ -3,7 +3,7 @@ import pygame
 
 def load_image(filename,size):
     img = pygame.image.load(filename).convert_alpha()
-    img = pygame.transform.scale(img, (size, size))
+    img = pygame.transform.smoothscale(img, (size, size))
     return img
 
 def play_sound(audio):
@@ -16,7 +16,7 @@ pygame.init()
 
 clock = pygame.time.Clock()
 
-screen_size = (1000//8)*8
+screen_size = (RESOLUTION//8)*8
 pygame.display.set_caption("Pengüin Chess")
 screen = pygame.display.set_mode((screen_size, screen_size))
 
@@ -65,7 +65,7 @@ while True:
                 screen.blit(w_background,(row*box_size,column*box_size))
             else:
                 screen.blit(b_background,(row*box_size,column*box_size))
-    
+
     # Drawing selected box (if selected)
     if selected:
         screen.blit(s_background,((from_box[1]*box_size,(7-from_box[0])*box_size)))
@@ -80,6 +80,10 @@ while True:
                     screen.blit(w_matrix[piece],(row*box_size,(7-column)*box_size))
                 if owner == BLACK:
                     screen.blit(b_matrix[piece],(row*box_size,(7-column)*box_size))
+
+    # Drawing custom cursor
+    mouse_position = pygame.mouse.get_pos()
+    screen.blit(cursor,mouse_position)
 
     # Handling clicks
     ev = pygame.event.get()
