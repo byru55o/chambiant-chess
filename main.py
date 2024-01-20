@@ -8,6 +8,8 @@ def load_image(filename,size):
 
 pygame.init()
 
+clock = pygame.time.Clock()
+
 screen_size = (1000//8)*8
 pygame.display.set_caption("Pengüin Chess")
 screen = pygame.display.set_mode((screen_size, screen_size))
@@ -38,6 +40,7 @@ b_matrix = [None,b_pawn,b_rook,b_knight,b_bishop,b_king,b_queen]
 w_matrix = [None,w_pawn,w_rook,w_knight,w_bishop,w_king,w_queen]
 
 # Main game loop
+turn = WHITE
 selected = False
 from_box = (0,0)
 to_box = (0,0)
@@ -53,7 +56,7 @@ while True:
     
     # Drawing selected box (if selected)
     if selected:
-        screen.blit(s_background,(from_box[0]*box_size,(7-from_box[1])*box_size))
+        screen.blit(s_background,((from_box[1]*box_size,(7-from_box[0])*box_size)))
 
     # Drawing pieces on the table
     for row in range(0,8):
@@ -73,12 +76,29 @@ while True:
             mouse_position = pygame.mouse.get_pos()
             row = int(mouse_position[0]//box_size)
             column = int(7-(mouse_position[1]//box_size))
+            print(f"Clicked piece [{column},{row}]")
             if selected:
-                selected = False
-                to_box = (row,column)
-                print(f"Attempting: {from_box} -> {to_box}")
+                to_box = (column,row)
+                if table[column][row][0] != turn:
+                    if check_move(from_box,to_box):
+                        selected = False
+
+                        # Copying piece to table
+                        table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
+                        table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
+
+                        # Removing piece from table
+                        table[from_box[0]][from_box[1]][0] = NO_ONE
+                        table[from_box[0]][from_box[1]][1] = EMPTY
+                else:
+                    selected = False
             else:
-                selected = True
-                from_box = (row,column)
+                if table[column][row][0] == turn:
+                    selected = True
+                    from_box = (column,row)
+
+    if turn == BLACK:
+        turn = WHITE
 
     pygame.display.update()
+    clock.tick(FPS)

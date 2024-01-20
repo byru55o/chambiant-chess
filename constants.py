@@ -11,3 +11,5 @@ QUEEN = 6
 NO_ONE = 0
 WHITE = 1
 BLACK = 2
+
+FPS = 60

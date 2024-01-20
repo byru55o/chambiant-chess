@@ -142,169 +142,222 @@ def is_check(color):
     return False
 
 
-def rook_check(_table, owner, p1, p2):
-    # If the rook move in a diagonal direction
+def rook_check(p1, p2):
+    owner = table[p1[0]][p1[1]][0]
+    
+    # Basic checks (for all functions)
+    if p1 == p2:
+        print("rook_check: position unchanged")
+        return False
+    if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        print("rook_check: position excceded table limits")
+        return False
+    if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
+        print("rook_check: position excceded table limits")
+        return False
+    if table[p2[0]][p2[1]][0] == owner:
+        print("rook_check: owner trying to eat owner")
+        return False
+    
+    # Checking direction
     if p1[0] != p2[0] and p1[1] != p2[1]:
+        print("rook_check: rook can not move in both axis at a time")
         return False
-    # If the rook did not move
-    if p1 == p2:
-        return False
-    # Checking table limits
-    if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
-        return False
-    if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
-        return False
-    # Checking for pieces
-    delta_row = p2[0] - p1[0]
-    delta_column = p2[1] - p1[1]
-    # Checking if the there is a piece in p2
-    if _table[p2[0]][p2[1]][0] == owner:
-        return False
-    # Checking for pieces in the middle
-    if delta_row == 0:
-        delta_s = int(delta_column / abs(delta_column))
-        for i in range(p1[1] + delta_s, p2[1], delta_s):
-            if _table[p2[0]][i][0] != NO_ONE:
-                return False
-    if delta_column == 0:
-        delta_s = int(delta_row / abs(delta_row))
-        for i in range(p1[0] + delta_s, p2[0], delta_s):
-            if _table[i][p2[1]][0] != NO_ONE:
-                return False
-    return True
 
+    # Calculating deltas
+    delta_column = p2[0] - p1[0]
+    delta_column_s = sign(delta_column)
+    delta_row = p2[1] - p1[1]
+    delta_row_s = sign(delta_row)
 
-def pawn_check(_table, owner, p1, p2):
-    delta_row = p2[0] - p1[0]
-    delta_column = p2[1] - p1[1]
-    if p1 == p2:
-        return False
-    # Checking for double move
-    if owner == WHITE and p1[0] != 1 and abs(delta_row) > 1:
-        return False
-    if owner == BLACK and p1[0] != 6 and abs(delta_row) > 1:
-        return False
-    # Checking diagonal move
-    if abs(delta_row) == 1 and abs(delta_column) == 1:
-        if _table[p2[0]][p2[1]][0] == owner or _table[p2[0]][p2[1]][0] == EMPTY:
+    # Checking for pieces in the wat
+    for i in range(1, abs(delta_column+delta_row)):
+        c = int((i * delta_column_s) + p1[0])
+        r = int((i * delta_row_s) + p1[1])
+        if table[c][r][0] != EMPTY:
+            print("rook_check: there are pieces in the way")
             return False
-    # Checking column move
-    if delta_column != 0:
-        return False
-    # Checking for backwards moves
-    if owner == WHITE and delta_row < 0:
-        return False
-    if owner == BLACK and delta_row > 0:
-        return False
-    # Checking the limits
-    if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
-        return False
-    if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
-        return False
-    # Checking for an invalid forward move
-    if table[p2[0]][p2[1]][0] != EMPTY:
-        return False
-    if abs(delta_row) > 1:
-        return False
     return True
 
 
-def king_check(_table, owner, p1, p2):
-    # Checking for pieces
-    delta_row = p2[0] - p1[0]
-    delta_column = p2[1] - p1[1]
-    # Checking the limits
+def pawn_check(p1, p2):
+    owner = table[p1[0]][p1[1]][0]
+
+    # Basic checks (for all functions)
+    if p1 == p2:
+        print("pawn_check: position unchanged")
+        return False
     if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        print("pawn_check: position excceded table limits")
         return False
     if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
+        print("pawn_check: position excceded table limits")
         return False
-    # Checking for an invalid forward move
     if table[p2[0]][p2[1]][0] == owner:
+        print("pawn_check: owner trying to eat owner")
         return False
-    if abs(delta_row) > 1:
+
+    # Calculating deltas
+    delta_column = p2[0] - p1[0]
+    delta_column_s = sign(delta_column)
+    delta_row = p2[1] - p1[1]
+    delta_row_s = sign(delta_row)
+
+    return True
+
+
+def king_check(p1, p2):
+    owner = table[p1[0]][p1[1]][0]
+
+    # Basic checks (for all functions)
+    if p1 == p2:
+        print("king_check: position unchanged")
         return False
+    if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        print("king_check: position excceded table limits")
+        return False
+    if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
+        print("king_check: position excceded table limits")
+        return False
+    if table[p2[0]][p2[1]][0] == owner:
+        print("king_check: owner trying to eat owner")
+        return False
+
+    # Calculating deltas
+    delta_column = p2[0] - p1[0]
+    delta_column_s = sign(delta_column)
+    delta_row = p2[1] - p1[1]
+    delta_row_s = sign(delta_row)
+
+    # Checking that it only moves one box
     if abs(delta_column) > 1:
+        print("king_check: moving more than one box")
         return False
-    if p1 == p2:
+    if abs(delta_row) > 1:
+        print("king_check: moving more than one box")
         return False
     return True
 
 
-def knight_check(_table, owner, p1, p2):
-    # Checking table limits
+def knight_check(p1, p2):
+    owner = table[p1[0]][p1[1]][0]
+
+    # Basic checks (for all functions)
+    if p1 == p2:
+        print("knight_check: position unchanged")
+        return False
     if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        print("knight_check: position excceded table limits")
         return False
     if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
+        print("knight_check: position excceded table limits")
         return False
-    delta_row = p2[0] - p1[0]
-    delta_column = p2[1] - p1[1]
+    if table[p2[0]][p2[1]][0] == owner:
+        print("knight_check: owner trying to eat owner")
+        return False
+
+    # Calculating deltas
+    delta_column = p2[0] - p1[0]
+    delta_column_s = sign(delta_column)
+    delta_row = p2[1] - p1[1]
+    delta_row_s = sign(delta_row)
+    
+    # Checking if it is only moving in one axis
+    if delta_column == 0 or delta_row == 0:
+        print("knight_check: only moving in one axis")
+        return False
+
+    # Checking that is moves in L
     if not ((abs(delta_row) / abs(delta_column) == 0.5) or (abs(delta_row) / abs(delta_column) == 2)):
+        print("knight_check: not moving in L")
         return False
+    
+    # Checking it is not moving more than 2 box in axis
     if abs(delta_row) > 2 or abs(delta_column) > 2:
-        return False
-    if table[p2[0]][p2[1]][0] == owner:
-        return False
-    if p1 == p2:
+        print("knight_check: moving more than two boxes")
         return False
     return True
 
 
-def bishop_check(_table, owner, p1, p2):
-    # Checking table limits
+def bishop_check(p1, p2):
+    owner = table[p1[0]][p1[1]][0]
+
+    # Basic checks (for all functions)
+    if p1 == p2:
+        print("bishop_check: position unchanged")
+        return False
     if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        print("bishop_check: position excceded table limits")
         return False
     if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
+        print("bishop_check: position excceded table limits")
         return False
-    delta_row = p2[0] - p1[0]
-    delta_column = p2[1] - p1[1]
-    delta_row_s = abs(delta_row) / delta_row
-    delta_column_s = abs(delta_column) / delta_column
+    if table[p2[0]][p2[1]][0] == owner:
+        print("bishop_check: owner trying to eat owner")
+        return False
+
+    # Calculating deltas
+    delta_column = p2[0] - p1[0]
+    delta_column_s = sign(delta_column)
+    delta_row = p2[1] - p1[1]
+    delta_row_s = sign(delta_row)
+
+    # Checking if it is only moving in one axis
+    if delta_row == 0 or delta_column == 0:
+        print("bishop_check: only moving in one axis")
+        return False
+
+    # Checking that moves equally on both axis
     if abs(delta_row / delta_column) != 1:
+        print("bishop_check: not moving in both axis equally")
         return False
-    if p1 == p2:
-        return False
-    if table[p2[0]][p2[1]][0] == owner:
-        return False
+    
+    # Checking for pieces in the middle
     for i in range(1, abs(delta_row)):
-        _x = (i * delta_row_s) + p1[0]
-        _y = (i * delta_column_s) + p1[1]
-        if _table[_x][_y][0] != EMPTY:
+        c = int((i * delta_column_s) + p1[0])
+        r = int((i * delta_row_s) + p1[1])
+        if table[c][r][0] != EMPTY:
+            print("bishop_check: there are pieces in the way")
             return False
     return True
 
 
-def queen_check(_table, owner, p1, p2):
-    # Checking table limits
+def queen_check(p1, p2):
+    owner = table[p1[0]][p1[1]][0]
+
+    # Basic checks (for all functions)
+    if p1 == p2:
+        print("pawn_check: position unchanged")
+        return False
     if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        print("pawn_check: position excceded table limits")
         return False
     if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
-        return False
-    delta_row = p2[0] - p1[0]
-    delta_column = p2[1] - p1[1]
-    delta_row_s = abs(delta_row) / delta_row
-    delta_column_s = abs(delta_column) / delta_column
-    # Checking if it does not move
-    if p1 == p2:
+        print("pawn_check: position excceded table limits")
         return False
     if table[p2[0]][p2[1]][0] == owner:
+        print("pawn_check: owner trying to eat owner")
         return False
-    if delta_row == 0:
-        delta_s = int(delta_column / abs(delta_column))
-        for i in range(p1[1] + delta_s, p2[1], delta_s):
-            if _table[p2[0]][i][0] != NO_ONE:
-                return False
-    if delta_column == 0:
-        delta_s = int(delta_row / abs(delta_row))
-        for i in range(p1[0] + delta_s, p2[0], delta_s):
-            if _table[i][p2[1]][0] != NO_ONE:
-                return False
-    for i in range(1, abs(delta_row)):
-        _x = (i * delta_row_s) + p1[0]
-        _y = (i * delta_column_s) + p1[1]
-        if _table[_x][_y][0] != EMPTY:
-            return False
+
+    # Calculating deltas
+    delta_column = p2[0] - p1[0]
+    delta_column_s = sign(delta_column)
+    delta_row = p2[1] - p1[1]
+    delta_row_s = sign(delta_row)
     return True
 
+
+# Global function to check ANY move
+# Undone/broken pieces: pawn,queen
+def check_move(p1, p2):
+    piece = table[p1[0]][p1[1]][1]
+    if piece == KNIGHT: return knight_check(p1,p2)
+    if piece == QUEEN:  return queen_check(p1,p2)
+    if piece == PAWN:   return pawn_check(p1,p2)
+    if piece == BISHOP: return bishop_check(p1,p2)
+    if piece == KING:   return king_check(p1,p2)
+    if piece == ROOK:   return rook_check(p1,p2)
+    return True
 
 generate_new_table()
 add_pieces()
