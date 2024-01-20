@@ -171,7 +171,7 @@ def rook_check(p1, p2):
     delta_row_s = sign(delta_row)
 
     # Checking for pieces in the wat
-    for i in range(1, abs(delta_column+delta_row)):
+    for i in range(1, max([abs(delta_column),abs(delta_row)])):
         c = int((i * delta_column_s) + p1[0])
         r = int((i * delta_row_s) + p1[1])
         if table[c][r][0] != EMPTY:
@@ -313,7 +313,7 @@ def bishop_check(p1, p2):
         return False
     
     # Checking for pieces in the middle
-    for i in range(1, abs(delta_row)):
+    for i in range(1, max([abs(delta_column),abs(delta_row)])):
         c = int((i * delta_column_s) + p1[0])
         r = int((i * delta_row_s) + p1[1])
         if table[c][r][0] != EMPTY:
@@ -327,16 +327,16 @@ def queen_check(p1, p2):
 
     # Basic checks (for all functions)
     if p1 == p2:
-        print("pawn_check: position unchanged")
+        print("queen_check: position unchanged")
         return False
     if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
-        print("pawn_check: position excceded table limits")
+        print("queen_check: position excceded table limits")
         return False
     if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
-        print("pawn_check: position excceded table limits")
+        print("queen_check: position excceded table limits")
         return False
     if table[p2[0]][p2[1]][0] == owner:
-        print("pawn_check: owner trying to eat owner")
+        print("queen_check: owner trying to eat owner")
         return False
 
     # Calculating deltas
@@ -344,11 +344,26 @@ def queen_check(p1, p2):
     delta_column_s = sign(delta_column)
     delta_row = p2[1] - p1[1]
     delta_row_s = sign(delta_row)
+
+    # Checking if it is moving on both axis
+    if delta_column != 0 and delta_row != 0:
+        if abs(delta_column/delta_row) != 1:
+            print("queen_check: not moving equally on both axis")
+            return False
+    
+    # Checking for pieces in the middle
+    for i in range(1, max([abs(delta_column),abs(delta_row)])):
+        c = int((i * delta_column_s) + p1[0])
+        r = int((i * delta_row_s) + p1[1])
+        if table[c][r][0] != EMPTY:
+            print("queen_check: there are pieces in the way")
+            return False
+
     return True
 
 
 # Global function to check ANY move
-# Undone/broken pieces: pawn,queen
+# Undone/broken pieces: pawn
 def check_move(p1, p2):
     piece = table[p1[0]][p1[1]][1]
     if piece == KNIGHT: return knight_check(p1,p2)
@@ -365,5 +380,4 @@ add_pieces()
 #table[1][1] = [BLACK, ROOK]
 #table[2][2] = [BLACK, BISHOP]
 #table[1][2] = [BLACK, KNIGHT]
-
-print(is_check(WHITE))
+#print(is_check(WHITE))
