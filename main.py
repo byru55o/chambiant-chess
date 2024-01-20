@@ -1,3 +1,5 @@
+from constants import *
+
 # TABLE CLASS (WITH NEGATIVE INDEXING DISABLED)
 class MyTable(list):
     def __getitem__(self, n):
@@ -6,22 +8,7 @@ class MyTable(list):
         return list.__getitem__(self, n)
 
 
-# DECLARATION OF CONSTANTS
-TABLE_SIZE = [8, 8]
 table = MyTable()
-
-EMPTY = 0
-PAWN = 1  # done
-ROOK = 2  # done
-KNIGHT = 3  # done
-BISHOP = 4  # done
-KING = 5  # done
-QUEEN = 6  #
-
-NO_ONE = 0
-WHITE = 1
-BLACK = 2
-
 
 # ruso
 # GENERATE TABLE (FINISHED)
@@ -320,9 +307,10 @@ def queen_check(_table, owner, p1, p2):
 
 
 generate_new_table()
-table[0][0] = [WHITE, KING]
-table[1][1] = [BLACK, ROOK]
-table[2][2] = [BLACK, BISHOP]
-table[1][2] = [BLACK, KNIGHT]
+add_pieces()
+#table[0][0] = [WHITE, KING]
+#table[1][1] = [BLACK, ROOK]
+#table[2][2] = [BLACK, BISHOP]
+#table[1][2] = [BLACK, KNIGHT]
 
 print(is_check(WHITE))
