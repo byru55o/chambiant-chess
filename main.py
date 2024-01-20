@@ -6,6 +6,12 @@ def load_image(filename,size):
     img = pygame.transform.scale(img, (size, size))
     return img
 
+def play_sound(audio):
+    channel = pygame.mixer.Sound.play(audio)
+    while channel.get_busy():
+        pygame.time.wait(20)
+
+pygame.mixer.init()
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -35,12 +41,18 @@ w_pawn = load_image("assets/w_pawn.png",box_size)
 w_queen = load_image("assets/w_queen.png",box_size)
 w_rook = load_image("assets/w_rook.png",box_size)
 
+p_move = pygame.mixer.Sound("assets/p_move.wav")
+
 # Matrix ordered by constant values
 b_matrix = [None,b_pawn,b_rook,b_knight,b_bishop,b_king,b_queen]
 w_matrix = [None,w_pawn,w_rook,w_knight,w_bishop,w_king,w_queen]
 
+# Turn change matrix
+c_matrix = [None,BLACK,WHITE]
+
 # Main game loop
 turn = WHITE
+change = False
 selected = False
 from_box = (0,0)
 to_box = (0,0)
@@ -90,6 +102,12 @@ while True:
                         # Removing piece from table
                         table[from_box[0]][from_box[1]][0] = NO_ONE
                         table[from_box[0]][from_box[1]][1] = EMPTY
+
+                        # Playing sound
+                        play_sound(p_move)
+
+                        # Change turn
+                        change = True
                 else:
                     selected = False
             else:
@@ -97,8 +115,10 @@ while True:
                     selected = True
                     from_box = (column,row)
 
-    if turn == BLACK:
-        turn = WHITE
+    # Switching turns
+    if change:
+        change = False
+        turn = c_matrix[turn]
 
     pygame.display.update()
     clock.tick(FPS)
