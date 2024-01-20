@@ -24,8 +24,8 @@ Tell people where they can go to for help. It can be any combination of an issue
 
 ## Roadmap
 - Chess basic rules [DOING]
-- Simple I/O interactions [DOING]
-- GUI
+- Simple I/O interactions ✅
+- GUI [DOING] \(menus in progress\)
 - Chess Bot
 
 ## Contributing
