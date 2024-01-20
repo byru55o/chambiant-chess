@@ -81,10 +81,6 @@ while True:
                 if owner == BLACK:
                     screen.blit(b_matrix[piece],(row*box_size,(7-column)*box_size))
 
-    # Drawing custom cursor
-    mouse_position = pygame.mouse.get_pos()
-    screen.blit(cursor,mouse_position)
-
     # Handling clicks
     ev = pygame.event.get()
     for event in ev:
