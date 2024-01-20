@@ -1,17 +1,41 @@
-import sys
-import sdl2.ext
-import sdl2.sdlimage
+import pygame
 
-sdl2.ext.init()
+def load_image(filename,size):
+    img = pygame.image.load(filename).convert()
+    img = pygame.transform.scale(img, (size, size))
+    return img
 
-window = sdl2.ext.Window("Pengüin Chess", size=(1024, 1024))
-window.show()
-sdl2.sdlimage.IMG_Init(sdl2.sdlimage.IMG_INIT_PNG)
-b_background_img = sdl2.ext.image.load_img("assets/square gray dark _png_shadow_128px.png")
-w_background_img = sdl2.ext.image.load_img("assets/square gray light _png_shadow_128px.png")
+pygame.init()
 
-factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
-x = sdl2.ext.SoftwareSprite(b_background_img,size=(2,2))
-spriterenderer = factory.create_sprite_render_system(window)
-spriterenderer.render(x)
-while True: pass
+screen_size = (500//8)*8
+pygame.display.set_caption("Pengüin Chess")
+screen = pygame.display.set_mode((screen_size, screen_size))
+
+box_size = screen_size/8
+
+# Load assets
+b_background = load_image("assets/b_background.png",box_size)
+b_bishop = load_image("assets/b_bishop.png",box_size)
+b_king = load_image("assets/b_king.png",box_size)
+b_knight = load_image("assets/b_knight.png",box_size)
+b_pawn = load_image("assets/b_pawn.png",box_size)
+b_queen = load_image("assets/b_queen.png",box_size)
+b_rook = load_image("assets/b_rook.png",box_size)
+
+w_background = load_image("assets/w_background.png",box_size)
+w_bishop = load_image("assets/w_bishop.png",box_size)
+w_king = load_image("assets/w_king.png",box_size)
+w_knight = load_image("assets/w_knight.png",box_size)
+w_pawn = load_image("assets/w_pawn.png",box_size)
+w_queen = load_image("assets/w_queen.png",box_size)
+w_rook = load_image("assets/w_rook.png",box_size)
+
+for row in range(0,8):
+    for column in range(0,8):
+        if (row+column)%2 == 0:
+            screen.blit(w_background,(row*box_size,column*box_size))
+        else:
+            screen.blit(b_background,(row*box_size,column*box_size))
+
+pygame.display.update()
+while True:pass
