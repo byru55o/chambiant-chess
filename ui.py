@@ -1,4 +1,4 @@
-from main import *
+from chess import *
 import pygame
 
 def load_image(filename,size):
