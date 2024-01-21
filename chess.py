@@ -1,4 +1,6 @@
 from constants import *
+from copy import deepcopy
+
 
 # TABLE CLASS (WITH NEGATIVE INDEXING DISABLED)
 class MyTable(list):
@@ -9,6 +11,7 @@ class MyTable(list):
 
 
 table = MyTable()
+
 
 # ruso
 # GENERATE TABLE (FINISHED)
@@ -68,7 +71,7 @@ def king_pos(color):
 
 # CHECK IF THERE IS A CHECK ON BOARD
 # True si lo está, False si no.
-def is_check(color):
+def is_check(_table, color):
     king_i = king_pos(color)[0]
     king_j = king_pos(color)[1]
     # checar al rey en todas las direcciones
@@ -79,7 +82,7 @@ def is_check(color):
         for m in range(7):  # revisará como mucho 7 casillas en cada dirección
             print(f"M ITERATION: M = {m}")
             try:
-                tile = table[king_i + anulate_if_n_is_four * sign(n) * (m + 1)][
+                tile = _table[king_i + anulate_if_n_is_four * sign(n) * (m + 1)][
                     king_j + sign(-(n ** 2) + (7 / 2) * abs(n) - (5 / 2)) * (m + 1)]
             except IndexError:
                 print("nos hemos salido del tablero: ooops!")
@@ -114,12 +117,8 @@ def is_check(color):
                     print("casilla vacía :)")
     # CABALLO (falta por explicar)
     for n in range(8):
-        print(f"KNIGHT ITERATION: N = {n}")
-        print(f"i que vamos a revisar: {int(king_i + (1 / 2) * sign(n - 3.5) - (1 / 2) + ((n // 2) - 1))}")
-        print(
-            f"j que vamos a revisar: {int((2 * sign((n / 2) - (n // 2)) - 1) * ((sign(-abs(n - 3.5) + 2) / 2) + (3 / 2)))}")
         try:
-            tile = table[int(king_i + (1 / 2) * sign(n - 3.5) - (1 / 2) + ((n // 2) - 1))][
+            tile = _table[int(king_i + (1 / 2) * sign(n - 3.5) - (1 / 2) + ((n // 2) - 1))][
                 int((2 * sign((n / 2) - (n // 2)) - 1) * ((sign(-abs(n - 3.5)
                                                                 + 2) / 2) + (3 / 2)))]
         except IndexError:
@@ -131,7 +130,7 @@ def is_check(color):
     for n in range(2):
         print(f"PAWN ITERATION: N = {n}")
         try:
-            tile = table[king_i - (2 * color) + 3][king_j + (2 * n - 1)]
+            tile = _table[king_i - (2 * color) + 3][king_j + (2 * n - 1)]
         except IndexError:
             print("Nos hemos salido del tablero: vaya bobilibustaxxboingboing!")
             continue
@@ -144,7 +143,7 @@ def is_check(color):
 
 def rook_check(p1, p2):
     owner = table[p1[0]][p1[1]][0]
-    
+
     # Basic checks (for all functions)
     if p1 == p2:
         print("rook_check: position unchanged")
@@ -158,7 +157,7 @@ def rook_check(p1, p2):
     if table[p2[0]][p2[1]][0] == owner:
         print("rook_check: owner trying to eat owner")
         return False
-    
+
     # Checking direction
     if p1[0] != p2[0] and p1[1] != p2[1]:
         print("rook_check: rook can not move in both axis at a time")
@@ -171,7 +170,7 @@ def rook_check(p1, p2):
     delta_row_s = sign(delta_row)
 
     # Checking for pieces in the wat
-    for i in range(1, max([abs(delta_column),abs(delta_row)])):
+    for i in range(1, max([abs(delta_column), abs(delta_row)])):
         c = int((i * delta_column_s) + p1[0])
         r = int((i * delta_row_s) + p1[1])
         if table[c][r][0] != EMPTY:
@@ -261,7 +260,7 @@ def knight_check(p1, p2):
     delta_column_s = sign(delta_column)
     delta_row = p2[1] - p1[1]
     delta_row_s = sign(delta_row)
-    
+
     # Checking if it is only moving in one axis
     if delta_column == 0 or delta_row == 0:
         print("knight_check: only moving in one axis")
@@ -271,7 +270,7 @@ def knight_check(p1, p2):
     if not ((abs(delta_row) / abs(delta_column) == 0.5) or (abs(delta_row) / abs(delta_column) == 2)):
         print("knight_check: not moving in L")
         return False
-    
+
     # Checking it is not moving more than 2 box in axis
     if abs(delta_row) > 2 or abs(delta_column) > 2:
         print("knight_check: moving more than two boxes")
@@ -311,9 +310,9 @@ def bishop_check(p1, p2):
     if abs(delta_row / delta_column) != 1:
         print("bishop_check: not moving in both axis equally")
         return False
-    
+
     # Checking for pieces in the middle
-    for i in range(1, max([abs(delta_column),abs(delta_row)])):
+    for i in range(1, max([abs(delta_column), abs(delta_row)])):
         c = int((i * delta_column_s) + p1[0])
         r = int((i * delta_row_s) + p1[1])
         if table[c][r][0] != EMPTY:
@@ -347,12 +346,12 @@ def queen_check(p1, p2):
 
     # Checking if it is moving on both axis
     if delta_column != 0 and delta_row != 0:
-        if abs(delta_column/delta_row) != 1:
+        if abs(delta_column / delta_row) != 1:
             print("queen_check: not moving equally on both axis")
             return False
-    
+
     # Checking for pieces in the middle
-    for i in range(1, max([abs(delta_column),abs(delta_row)])):
+    for i in range(1, max([abs(delta_column), abs(delta_row)])):
         c = int((i * delta_column_s) + p1[0])
         r = int((i * delta_row_s) + p1[1])
         if table[c][r][0] != EMPTY:
@@ -366,18 +365,38 @@ def queen_check(p1, p2):
 # Undone/broken pieces: pawn
 def check_move(p1, p2):
     piece = table[p1[0]][p1[1]][1]
-    if piece == KNIGHT: return knight_check(p1,p2)
-    if piece == QUEEN:  return queen_check(p1,p2)
-    if piece == PAWN:   return pawn_check(p1,p2)
-    if piece == BISHOP: return bishop_check(p1,p2)
-    if piece == KING:   return king_check(p1,p2)
-    if piece == ROOK:   return rook_check(p1,p2)
+    piece_color = table[p1[0]][p1[1]][0]
+    new_table = MyTable(deepcopy(table))
+    new_table[p1[0]][p1[1]][0] = NO_ONE
+    new_table[p1[0]][p1[1]][1] = EMPTY
+    new_table[p2[0]][p2[1]][0] = piece_color
+    new_table[p2[0]][p2[1]][1] = piece
+    if table == new_table:
+        print("tables are the same... BOF")
+    else:
+        print("tables are not the same")
+        print(table)
+        print(new_table)
+    if piece == KNIGHT:
+        print(f"knight check: {knight_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return knight_check(p1, p2) and not is_check(new_table, piece_color)
+    elif piece == QUEEN:
+        print(f"queen check: {queen_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return queen_check(p1, p2) and not is_check(new_table, piece_color)
+    elif piece == PAWN:
+        print(f"pawn check: {pawn_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return pawn_check(p1, p2) and not is_check(new_table, piece_color)
+    elif piece == BISHOP:
+        print(f"bishop check: {bishop_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return bishop_check(p1, p2) and not is_check(new_table, piece_color)
+    elif piece == KING:
+        print(f"king check: {king_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return king_check(p1, p2) and not is_check(new_table, piece_color)
+    elif piece == ROOK:
+        print(f"rook check: {rook_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return rook_check(p1, p2) and not is_check(new_table, piece_color)
     return True
+
 
 generate_new_table()
 add_pieces()
-#table[0][0] = [WHITE, KING]
-#table[1][1] = [BLACK, ROOK]
-#table[2][2] = [BLACK, BISHOP]
-#table[1][2] = [BLACK, KNIGHT]
-#print(is_check(WHITE))
