@@ -12,8 +12,10 @@ class MyTable(list):
 
 table = MyTable()
 
-
 # ruso
+# TO DO: remove testing lines
+
+
 # GENERATE TABLE (FINISHED)
 # Table example (2x2):
 # [
@@ -141,7 +143,7 @@ def is_check(_table, color):
     return False
 
 
-def rook_check(p1, p2):
+def rook_legal(p1, p2):
     owner = table[p1[0]][p1[1]][0]
 
     # Basic checks (for all functions)
@@ -179,7 +181,7 @@ def rook_check(p1, p2):
     return True
 
 
-def pawn_check(p1, p2):
+def pawn_legal(p1, p2):
     owner = table[p1[0]][p1[1]][0]
 
     # Basic checks (for all functions)
@@ -205,7 +207,7 @@ def pawn_check(p1, p2):
     return True
 
 
-def king_check(p1, p2):
+def king_legal(p1, p2):
     owner = table[p1[0]][p1[1]][0]
 
     # Basic checks (for all functions)
@@ -238,7 +240,7 @@ def king_check(p1, p2):
     return True
 
 
-def knight_check(p1, p2):
+def knight_legal(p1, p2):
     owner = table[p1[0]][p1[1]][0]
 
     # Basic checks (for all functions)
@@ -278,7 +280,7 @@ def knight_check(p1, p2):
     return True
 
 
-def bishop_check(p1, p2):
+def bishop_legal(p1, p2):
     owner = table[p1[0]][p1[1]][0]
 
     # Basic checks (for all functions)
@@ -321,7 +323,7 @@ def bishop_check(p1, p2):
     return True
 
 
-def queen_check(p1, p2):
+def queen_legal(p1, p2):
     owner = table[p1[0]][p1[1]][0]
 
     # Basic checks (for all functions)
@@ -363,7 +365,7 @@ def queen_check(p1, p2):
 
 # Global function to check ANY move
 # Undone/broken pieces: pawn
-def check_move(p1, p2):
+def legal_move(p1, p2):
     piece = table[p1[0]][p1[1]][1]
     piece_color = table[p1[0]][p1[1]][0]
     new_table = MyTable(deepcopy(table))
@@ -378,23 +380,23 @@ def check_move(p1, p2):
         print(table)
         print(new_table)
     if piece == KNIGHT:
-        print(f"knight check: {knight_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return knight_check(p1, p2) and not is_check(new_table, piece_color)
+        print(f"knight check: {knight_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return knight_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == QUEEN:
-        print(f"queen check: {queen_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return queen_check(p1, p2) and not is_check(new_table, piece_color)
+        print(f"queen check: {queen_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return queen_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == PAWN:
-        print(f"pawn check: {pawn_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return pawn_check(p1, p2) and not is_check(new_table, piece_color)
+        print(f"pawn check: {pawn_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return pawn_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == BISHOP:
-        print(f"bishop check: {bishop_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return bishop_check(p1, p2) and not is_check(new_table, piece_color)
+        print(f"bishop check: {bishop_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return bishop_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == KING:
-        print(f"king check: {king_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return king_check(p1, p2) and not is_check(new_table, piece_color)
+        print(f"king check: {king_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return king_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == ROOK:
-        print(f"rook check: {rook_check(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return rook_check(p1, p2) and not is_check(new_table, piece_color)
+        print(f"rook check: {rook_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
+        return rook_legal(p1, p2) and not is_check(new_table, piece_color)
     return True
 
 

@@ -95,7 +95,7 @@ while True:
             if selected:
                 to_box = (column, row)
                 if table[column][row][0] != turn:
-                    if check_move(from_box, to_box):
+                    if legal_move(from_box, to_box):
                         selected = False
 
                         # Copying piece to table
