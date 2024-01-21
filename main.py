@@ -27,6 +27,7 @@ box_size = screen_size / 8
 
 # Load assets
 s_background = load_image("assets/s_background.png", box_size)
+s_check = load_image("assets/s_check.png",box_size)
 
 b_background = load_image("assets/b_background.png", box_size)
 b_bishop = load_image("assets/b_bishop.png", box_size)
@@ -45,6 +46,8 @@ w_queen = load_image("assets/w_queen.png", box_size)
 w_rook = load_image("assets/w_rook.png", box_size)
 
 p_move = pygame.mixer.Sound("assets/p_move.wav")
+p_capture = pygame.mixer.Sound("assets/p_capture.wav")
+p_notify = pygame.mixer.Sound("assets/p_notify.wav")
 
 # Matrix ordered by constant values
 b_matrix = [None, b_pawn, b_rook, b_knight, b_bishop, b_king, b_queen]
@@ -59,6 +62,9 @@ change = False
 selected = False
 from_box = (0, 0)
 to_box = (0, 0)
+
+king_position = (0,0)
+check = False
 while True:
 
     # Draw base table
@@ -72,6 +78,9 @@ while True:
     # Drawing selected box (if selected)
     if selected:
         screen.blit(s_background, (from_box[1] * box_size, (7 - from_box[0]) * box_size))
+
+    if check:
+        screen.blit(s_check, (king_position[1] * box_size, (7 - king_position[0]) * box_size))
 
     # Drawing pieces on the table
     for row in range(0, 8):
@@ -98,6 +107,12 @@ while True:
                     if legal_move(from_box, to_box):
                         selected = False
 
+                        # Playing sound
+                        if table[column][row][0] == c_matrix[turn]:
+                            play_sound(p_capture)
+                        else:
+                            play_sound(p_move)
+
                         # Copying piece to table
                         table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
                         table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
@@ -106,8 +121,10 @@ while True:
                         table[from_box[0]][from_box[1]][0] = NO_ONE
                         table[from_box[0]][from_box[1]][1] = EMPTY
 
-                        # Playing sound
-                        play_sound(p_move)
+                        # Getting if the king is in danger
+                        check = is_check(table,c_matrix[turn])
+                        if check:
+                            king_position = king_pos(c_matrix[turn])
 
                         # Change turn
                         change = True
