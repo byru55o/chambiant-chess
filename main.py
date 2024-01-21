@@ -122,9 +122,9 @@ while True:
                         table[from_box[0]][from_box[1]][1] = EMPTY
 
                         # Getting if the king is in danger
-                        check = is_check(table,c_matrix[turn])
+                        check = is_check(table, c_matrix[turn])
                         if check:
-                            king_position = king_pos(c_matrix[turn])
+                            king_position = king_pos(table, c_matrix[turn])
 
                         # Change turn
                         change = True

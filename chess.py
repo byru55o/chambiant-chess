@@ -59,13 +59,13 @@ def sign(n):
 
 # POSICIÓN DEL REY, ÚNICO REY
 # calcular las coordenadas del rey
-def king_pos(color):
+def king_pos(_table, color):
     king_i = None
     king_j = None
-    for column in table:
+    for column in _table:
         try:
             king_j = column.index([color, KING])
-            king_i = table.index(column)
+            king_i = _table.index(column)
         except:
             pass
     return [king_i, king_j]
@@ -74,8 +74,8 @@ def king_pos(color):
 # CHECK IF THERE IS A CHECK ON BOARD
 # True si lo está, False si no.
 def is_check(_table, color):
-    king_i = king_pos(color)[0]
-    king_j = king_pos(color)[1]
+    king_i = king_pos(_table, color)[0]
+    king_j = king_pos(_table, color)[1]
     # checar al rey en todas las direcciones
     # COLUMNAS Y DIAGONALES - reinas, torres y alfiles
     for n in range(-3, 4):  # bucle de 8 iteraciones, cada una es una dirección
@@ -121,7 +121,7 @@ def is_check(_table, color):
     for n in range(8):
         try:
             tile = _table[int(king_i + (1 / 2) * sign(n - 3.5) - (1 / 2) + ((n // 2) - 1))][
-                int((2 * sign((n / 2) - (n // 2)) - 1) * ((sign(-abs(n - 3.5)
+                int(king_j + (2 * sign((n / 2) - (n // 2)) - 1) * ((sign(-abs(n - 3.5)
                                                                 + 2) / 2) + (3 / 2)))]
         except IndexError:
             print("Nos hemos salido del tablero: vaya por Dios!")
