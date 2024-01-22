@@ -91,7 +91,6 @@ def is_check(_table, color):
                     tile = _table[king_i][king_j + (m + 1)]
             except IndexError:
                 break
-            print(tile)
             # la casilla que vamos a revisar se calcula de la siguiente manera:
             # N ES UN NÚMERO DEL -3 AL 4: en las 3 primeras iteraciones del bucle primario restaremos 1 a la coord. i
             # (ya que n será negativo), es decir, iremos verificando todas las casillas hacia abajo;
@@ -503,12 +502,6 @@ def legal_move(p1, p2):
     new_table[p1[0]][p1[1]][1] = EMPTY
     new_table[p2[0]][p2[1]][0] = piece_color
     new_table[p2[0]][p2[1]][1] = piece
-    if table == new_table:
-        print("tables are the same... BOF")
-    else:
-        print("tables are not the same")
-        print(table)
-        print(new_table)
     if piece == KNIGHT:
         print(f"knight check: {knight_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
         return knight_legal(p1, p2) and not is_check(new_table, piece_color)
