@@ -103,7 +103,33 @@ while True:
             print(f"Clicked piece [{column},{row}]")
             if selected:
                 to_box = (column, row)
-                if table[column][row][0] != turn:
+                if (table[from_box[0]][from_box[1]][1] == KING and table[column][row][1] == ROOK and
+                        (table[from_box[0]][from_box[1]][0] == table[column][row][0])):
+                    print("ATTEMPTING CASTLE!!!!!")
+                    castle_squares = castle(from_box, to_box)
+                    print(f"CASTLE SQUARES: {castle_squares}")
+                    if castle_squares != 0:
+                        selected = False
+
+                        # Playing_sound
+                        play_sound(p_move)
+
+                        # Placing king
+                        table[from_box[0]][from_box[1]+2*castle_squares][0] = table[from_box[0]][from_box[1]][0]
+                        table[from_box[0]][from_box[1]+2*castle_squares][1] = table[from_box[0]][from_box[1]][1]
+                        table[from_box[0]][from_box[1]][0] = NO_ONE
+                        table[from_box[0]][from_box[1]][1] = EMPTY
+
+                        # Placing rook
+                        table[from_box[0]][from_box[1]+castle_squares][0] = table[column][row][0]
+                        table[from_box[0]][from_box[1]+castle_squares][1] = table[to_box[0]][to_box[1]][1]
+                        table[to_box[0]][to_box[1]][0] = NO_ONE
+                        table[to_box[0]][to_box[1]][1] = EMPTY
+
+                        print(table)
+                        change = True
+
+                elif table[column][row][0] != turn:
                     if legal_move(from_box, to_box):
                         selected = False
 

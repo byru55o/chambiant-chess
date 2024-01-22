@@ -1,6 +1,9 @@
 from constants import *
 from copy import deepcopy
 
+king_moved = [False, False]  # 1er elemento -> ¿Han movido el rey las blancas? 2o elemento -> ¿" " " " las negras?
+rook_moved = [False, False, False, False]  # Lo mismo para cada torre -> índices: [0,0] ; [0,7] ; [7,0] ; [7,7]
+
 
 # TABLE CLASS (WITH NEGATIVE INDEXING DISABLED)
 class MyTable(list):
@@ -126,8 +129,7 @@ def is_check(_table, color):
     for n in range(8):
         try:
             tile = _table[int(king_i + (1 / 2) * sign(n - 3.5) - (1 / 2) + ((n // 2) - 1))][
-                int(king_j + (2 * sign((n / 2) - (n // 2)) - 1) * ((sign(-abs(n - 3.5)
-                                                                + 2) / 2) + (3 / 2)))]
+                int(king_j + (2 * sign((n / 2) - (n // 2)) - 1) * ((sign(-abs(n - 3.5) + 2) / 2) + (3 / 2)))]
         except IndexError:
             print("Nos hemos salido del tablero: vaya por Dios!")
             continue
@@ -176,7 +178,7 @@ def rook_legal(p1, p2):
     delta_row = p2[1] - p1[1]
     delta_row_s = sign(delta_row)
 
-    # Checking for pieces in the wat
+    # Checking for pieces in the way
     for i in range(1, max([abs(delta_column), abs(delta_row)])):
         c = int((i * delta_column_s) + p1[0])
         r = int((i * delta_row_s) + p1[1])
@@ -412,6 +414,97 @@ def queen_legal(p1, p2):
     return True
 
 
+def castle(p1, p2):
+    print("checking castle")
+    owner = table[p1[0]][p1[1]][0]
+
+    # Basic checks (for all functions)
+    if p1 == p2:
+        print("king_check: position unchanged")
+        return False
+    if p2[0] > (TABLE_SIZE[0] - 1) or p2[0] < 0:
+        print("king_check: position excceded table limits")
+        return False
+    if p2[1] > (TABLE_SIZE[1] - 1) or p2[1] < 0:
+        print("king_check: position excceded table limits")
+        return False
+
+    # Calculating deltas
+    print("calculating deltas...")
+    delta_column = p2[0] - p1[0]
+    delta_column_s = sign(delta_column)
+    delta_row = p2[1] - p1[1]
+    delta_row_s = sign(delta_row)
+    # Checking for not horizontal moves
+    if delta_column != 0:
+        print("king_check: owner not moving horizontally")
+        return False
+    # Checking that the king hasn't moved
+    if king_moved[owner-1]:
+        print("king_check: king has moved")
+        return False
+    # Checking for pieces in the way
+    print("checking pieces in the way")
+    for i in range(1, abs(delta_row)):
+        c = int((i * delta_row_s) + p1[1])
+        if table[(owner-1)*7][c][0] != EMPTY:
+            print("castle_check: there are pieces in the way")
+            return False
+    # Checks for LONG CASTLE
+    if p2[1] == 0:
+        print("attempting a long castle")
+        # Check whether the rook moved
+        if rook_moved[(owner-1)*2+1]:
+            print("the rook moved")
+            return False
+        # Check is_check in the two tiles at left of p1
+        table_1 = deepcopy(table)
+        table_1[p1[0]][p1[1]][0] = NO_ONE
+        table_1[p1[0]][p1[1]][1] = EMPTY
+        table_1[p1[0]][p1[1]-1][0] = owner
+        table_1[p1[0]][p1[1]-1][1] = KING
+
+        table_2 = deepcopy(table)
+        table_2[p1[0]][p1[1]][0] = NO_ONE
+        table_2[p1[0]][p1[1]][1] = EMPTY
+        table_2[p1[0]][p1[1]-2][0] = owner
+        table_2[p1[0]][p1[1]-2][1] = KING
+        if is_check(table_1, owner) or is_check(table_2, owner):
+            print("the king passes through check")
+            return False
+        else:
+            print("LONG CASTLE IS GUD")
+            return -1
+
+    # Checks for SHORT CASTLE
+    elif p2[1] == 7:
+        print("attempting short castle")
+        # Check whether the rook moved
+        if rook_moved[(owner-1)*2+1]:
+            print("the rook moved before")
+            return False
+        # Check is_check in the two tiles at right of p1
+        table_1 = deepcopy(table)
+        table_1[p1[0]][p1[1]][0] = NO_ONE
+        table_1[p1[0]][p1[1]][1] = EMPTY
+        table_1[p1[0]][p1[1]+1][0] = owner
+        table_1[p1[0]][p1[1]+1][1] = KING
+        print(table_1)
+
+        table_2 = deepcopy(table)
+        table_2[p1[0]][p1[1]][0] = NO_ONE
+        table_2[p1[0]][p1[1]][1] = EMPTY
+        table_2[p1[0]][p1[1]+2][0] = owner
+        table_2[p1[0]][p1[1]+2][1] = KING
+        if is_check(table_1, owner) or is_check(table_2, owner):
+            print("king passes through check")
+            return False
+        else:
+            print("SHORT CASTLE IS GUD")
+            return 1
+    else:  # No rook selected
+        print("no rook selected")
+
 # Global function to check ANY move
 # Undone/broken pieces: pawn
 def legal_move(p1, p2):
@@ -441,11 +534,19 @@ def legal_move(p1, p2):
         print(f"bishop check: {bishop_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
         return bishop_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == KING:
+        make_normal_move = king_legal(p1, p2) and not is_check(new_table, piece_color)
         print(f"king check: {king_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return king_legal(p1, p2) and not is_check(new_table, piece_color)
+        if make_normal_move:
+            king_moved[piece_color-1] = True  # Para comprobar la legalidad del enroque
+        return make_normal_move
+
     elif piece == ROOK:
+        make_move = rook_legal(p1, p2) and not is_check(new_table, piece_color)
         print(f"rook check: {rook_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return rook_legal(p1, p2) and not is_check(new_table, piece_color)
+        if make_move and ((p1[0] == 0 or p1[0] == 7) and (p1[1] == 0 or p1[1] == 7)):  # [0,0] ; [0,7] ; [7,7]; [7,0]
+            rook_moved[int((2/7)*p1[0]+(1/7)*p1[1])] = True  # Para comprobar la legalidad del enroque
+            # 0x+0y = 0 ; 0x+7y = 1 ; 7x+0y = 2 ; 7x+7y = 3 => x = 2/7 ; y = 1/7
+        return make_move
     return True
 
 
