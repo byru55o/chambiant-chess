@@ -80,12 +80,17 @@ def is_check(_table, color):
     # COLUMNAS Y DIAGONALES - reinas, torres y alfiles
     for n in range(-3, 4):  # bucle de 8 iteraciones, cada una es una dirección
         print(f"ROOK/BISHOP/QUEEN ITERATION: N = {n}")
-        anulate_if_n_is_four = sign(abs(n - 4))
         for m in range(7):  # revisará como mucho 7 casillas en cada dirección
             print(f"M ITERATION: M = {m}")
             try:
-                tile = _table[king_i + anulate_if_n_is_four * sign(n) * (m + 1)][
-                    king_j + sign(-(n ** 2) + (7 / 2) * abs(n) - (5 / 2)) * (m + 1)]
+                if n != 3:
+                    tile = _table[king_i + sign(n) * (m + 1)][
+                        king_j + sign(-(n ** 2) + (7 / 2) * abs(n) - (5 / 2)) * (m + 1)]
+                else:  # Caso excepción -> columna hacia la derecha
+                    print("CASO EXCEPCIÓN!!!!!!!!")
+                    print(f"m = {m}")
+                    print(f"j = {king_j + (m+1)}")
+                    tile = _table[king_i][king_j + (m + 1)]
             except IndexError:
                 print("nos hemos salido del tablero: ooops!")
                 break
@@ -96,8 +101,8 @@ def is_check(_table, color):
             # como la función del indice j es positiva en 2 y en -2 y cero en 1 y -1, nos facilita mucho el trabajo
             # la primera iteración será hacia abajo a secas, la segunda en diagonal hacia la derecha,
             # la tercera en diagonal hacia la izquerda, la cuarta será hacia arriba, etc.
-            # el único caso con el que no obtenemos lo que queremos es con n = 4, donde queremos que revise la dcha.
-            # por eso multiplicamos por una expresión que es cero cuando n = 4 y uno de lo contrario.
+            # el único caso con el que no obtenemos lo que queremos es con n = 3, donde queremos que revise la dcha.
+            # por eso multiplicamos por una expresión que es cero cuando n = 3 y uno de lo contrario.
             if abs(n) in range(2, 4):  # si lo que estamos comprobando es una diagonal
                 print("comprobando alfil")
                 if tile[0] == (-color + 3) and (tile[1] == BISHOP or tile[1] == QUEEN):
