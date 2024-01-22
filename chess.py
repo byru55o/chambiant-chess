@@ -82,20 +82,14 @@ def is_check(_table, color):
     # checar al rey en todas las direcciones
     # COLUMNAS Y DIAGONALES - reinas, torres y alfiles
     for n in range(-3, 4):  # bucle de 8 iteraciones, cada una es una dirección
-        print(f"ROOK/BISHOP/QUEEN ITERATION: N = {n}")
         for m in range(7):  # revisará como mucho 7 casillas en cada dirección
-            print(f"M ITERATION: M = {m}")
             try:
                 if n != 3:
                     tile = _table[king_i + sign(n) * (m + 1)][
                         king_j + sign(-(n ** 2) + (7 / 2) * abs(n) - (5 / 2)) * (m + 1)]
                 else:  # Caso excepción -> columna hacia la derecha
-                    print("CASO EXCEPCIÓN!!!!!!!!")
-                    print(f"m = {m}")
-                    print(f"j = {king_j + (m+1)}")
                     tile = _table[king_i][king_j + (m + 1)]
             except IndexError:
-                print("nos hemos salido del tablero: ooops!")
                 break
             print(tile)
             # la casilla que vamos a revisar se calcula de la siguiente manera:
@@ -107,41 +101,30 @@ def is_check(_table, color):
             # el único caso con el que no obtenemos lo que queremos es con n = 3, donde queremos que revise la dcha.
             # por eso multiplicamos por una expresión que es cero cuando n = 3 y uno de lo contrario.
             if abs(n) in range(2, 4):  # si lo que estamos comprobando es una diagonal
-                print("comprobando alfil")
                 if tile[0] == (-color + 3) and (tile[1] == BISHOP or tile[1] == QUEEN):
                     # y lo que hay en la casilla es es un alfil o reina de color opuesto...
                     return True
                 elif tile != [NO_ONE, EMPTY]:  # si hay cualquier otra cosa, salimos del bucle
-                    print("Vaya! Nos hemos topado con algo que no es ni un alfil ni una reina...")
                     break
-                else:
-                    print("casilla vacía :)")
             else:  # si lo que estamos comprobando es fila o columna
-                print("comprobando torre")
                 if tile[0] == (-color + 3) and (tile[1] == ROOK or tile[1] == QUEEN):
                     return True
                 elif tile != [NO_ONE, EMPTY]:
-                    print("Vaya! Nos hemos topado con algo que no es ni una torre ni una reina...")
                     break
-                else:
-                    print("casilla vacía :)")
     # CABALLO (falta por explicar)
     for n in range(8):
         try:
             tile = _table[int(king_i + (1 / 2) * sign(n - 3.5) - (1 / 2) + ((n // 2) - 1))][
                 int(king_j + (2 * sign((n / 2) - (n // 2)) - 1) * ((sign(-abs(n - 3.5) + 2) / 2) + (3 / 2)))]
         except IndexError:
-            print("Nos hemos salido del tablero: vaya por Dios!")
             continue
         if tile == [-color + 3, KNIGHT]:
             return True
     # PEONES
     for n in range(2):
-        print(f"PAWN ITERATION: N = {n}")
         try:
             tile = _table[king_i - (2 * color) + 3][king_j + (2 * n - 1)]
         except IndexError:
-            print("Nos hemos salido del tablero: vaya bobilibustaxxboingboing!")
             continue
         # la casilla que revisa es: índice i -> una más o menos que el índice del rey, dependiendo del color de éste
         # indice j -> una a la izqda. o dcha. dependiendo de la iteración (si es cero será una a la izqda. y viceversa)
@@ -437,25 +420,29 @@ def castle(p1, p2):
     delta_row_s = sign(delta_row)
     # Checking for not horizontal moves
     if delta_column != 0:
-        print("king_check: owner not moving horizontally")
+        print("castle: owner not moving horizontally")
         return False
     # Checking that the king hasn't moved
     if king_moved[owner-1]:
-        print("king_check: king has moved")
+        print("castle: king has moved")
+        return False
+    # Checking that the king is not in check
+    if is_check(table, owner):
+        print("castle: king is in check")
         return False
     # Checking for pieces in the way
-    print("checking pieces in the way")
+    print("castle: checking pieces in the way")
     for i in range(1, abs(delta_row)):
         c = int((i * delta_row_s) + p1[1])
         if table[(owner-1)*7][c][0] != EMPTY:
-            print("castle_check: there are pieces in the way")
+            print("castle: there are pieces in the way")
             return False
     # Checks for LONG CASTLE
     if p2[1] == 0:
-        print("attempting a long castle")
+        print("castle: attempting a long castle")
         # Check whether the rook moved
         if rook_moved[(owner-1)*2+1]:
-            print("the rook moved")
+            print("castle: the rook moved")
             return False
         # Check is_check in the two tiles at left of p1
         table_1 = deepcopy(table)
@@ -470,18 +457,18 @@ def castle(p1, p2):
         table_2[p1[0]][p1[1]-2][0] = owner
         table_2[p1[0]][p1[1]-2][1] = KING
         if is_check(table_1, owner) or is_check(table_2, owner):
-            print("the king passes through check")
+            print("castle: the king passes through check")
             return False
         else:
-            print("LONG CASTLE IS GUD")
+            print("castle: LONG CASTLE IS GUD")
             return -1
 
     # Checks for SHORT CASTLE
     elif p2[1] == 7:
-        print("attempting short castle")
+        print("castle: attempting short castle")
         # Check whether the rook moved
         if rook_moved[(owner-1)*2+1]:
-            print("the rook moved before")
+            print("castle: the rook moved before")
             return False
         # Check is_check in the two tiles at right of p1
         table_1 = deepcopy(table)
@@ -497,13 +484,14 @@ def castle(p1, p2):
         table_2[p1[0]][p1[1]+2][0] = owner
         table_2[p1[0]][p1[1]+2][1] = KING
         if is_check(table_1, owner) or is_check(table_2, owner):
-            print("king passes through check")
+            print("castle: king passes through check")
             return False
         else:
-            print("SHORT CASTLE IS GUD")
+            print("castle: SHORT CASTLE IS GUD")
             return 1
     else:  # No rook selected
-        print("no rook selected")
+        print("castle: no rook selected")
+
 
 # Global function to check ANY move
 # Undone/broken pieces: pawn
