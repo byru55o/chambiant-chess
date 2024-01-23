@@ -81,10 +81,10 @@ def is_check(_table, color):
     king_j = king_pos(_table, color)[1]
     # checar al rey en todas las direcciones
     # COLUMNAS Y DIAGONALES - reinas, torres y alfiles
-    for n in range(-3, 4):  # bucle de 8 iteraciones, cada una es una dirección
+    for n in range(-3, 5):  # bucle de 8 iteraciones, cada una es una dirección
         for m in range(7):  # revisará como mucho 7 casillas en cada dirección
             try:
-                if n != 3:
+                if n != 4:
                     tile = _table[king_i + sign(n) * (m + 1)][
                         king_j + sign(-(n ** 2) + (7 / 2) * abs(n) - (5 / 2)) * (m + 1)]
                 else:  # Caso excepción -> columna hacia la derecha
@@ -97,8 +97,8 @@ def is_check(_table, color):
             # como la función del indice j es positiva en 2 y en -2 y cero en 1 y -1, nos facilita mucho el trabajo
             # la primera iteración será hacia abajo a secas, la segunda en diagonal hacia la derecha,
             # la tercera en diagonal hacia la izquerda, la cuarta será hacia arriba, etc.
-            # el único caso con el que no obtenemos lo que queremos es con n = 3, donde queremos que revise la dcha.
-            # por eso multiplicamos por una expresión que es cero cuando n = 3 y uno de lo contrario.
+            # el único caso con el que no obtenemos lo que queremos es con n = 4, donde queremos que revise la dcha.
+            # por eso multiplicamos por una expresión que es cero cuando n = 4 y uno de lo contrario.
             if abs(n) in range(2, 4):  # si lo que estamos comprobando es una diagonal
                 if tile[0] == (-color + 3) and (tile[1] == BISHOP or tile[1] == QUEEN):
                     # y lo que hay en la casilla es es un alfil o reina de color opuesto...
