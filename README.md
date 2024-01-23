@@ -23,7 +23,7 @@ Use examples liberally, and show the expected output if you can. It's helpful to
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
 ## Roadmap
-- Chess basic rules [DOING]
+- Chess rules [DOING] (basic rules are DONE, even *en passant* is functional, still missing some elements such as **promotion**)
 - Simple I/O interactions ✅
 - GUI [DOING] \(menus in progress\)
 - Chess Bot
