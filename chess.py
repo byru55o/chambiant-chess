@@ -3,6 +3,7 @@ from copy import deepcopy
 
 king_moved = [False, False]  # 1er elemento -> ¿Han movido el rey las blancas? 2o elemento -> ¿" " " " las negras?
 rook_moved = [False, False, False, False]  # Lo mismo para cada torre -> índices: [0,0] ; [0,7] ; [7,0] ; [7,7]
+pawn_just_moved_double = None  # La columna del peón que acaba de mover doble
 
 
 # TABLE CLASS (WITH NEGATIVE INDEXING DISABLED)
@@ -486,6 +487,7 @@ def castle(p1, p2):
 # Global function to check ANY move
 # Undone/broken pieces: pawn
 def legal_move(p1, p2):
+    global pawn_just_moved_double
     piece = table[p1[0]][p1[1]][1]
     piece_color = table[p1[0]][p1[1]][0]
     new_table = MyTable(deepcopy(table))
@@ -493,6 +495,8 @@ def legal_move(p1, p2):
     new_table[p1[0]][p1[1]][1] = EMPTY
     new_table[p2[0]][p2[1]][0] = piece_color
     new_table[p2[0]][p2[1]][1] = piece
+    if piece != PAWN:
+        pawn_just_moved_double = None
     if piece == KNIGHT:
         print(f"knight check: {knight_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
         return knight_legal(p1, p2) and not is_check(new_table, piece_color)
@@ -500,8 +504,17 @@ def legal_move(p1, p2):
         print(f"queen check: {queen_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
         return queen_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == PAWN:
+        if (pawn_just_moved_double == p2[1] and p1[0] == -piece_color+5 and p2[0] == -3*piece_color+8
+                and table[p2[0]-1][p2[1]] == [-piece_color+3, PAWN]):  # Si se cumplen las condiciones para en passant
+            return "en passant"
+        make_move = pawn_legal(p1, p2) and not is_check(new_table, piece_color)
         print(f"pawn check: {pawn_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        return pawn_legal(p1, p2) and not is_check(new_table, piece_color)
+        if make_move and abs(p2[0]-p1[0]) == 2:  # if it's a double move
+            pawn_just_moved_double = p1[1]  # for en passant
+        else:
+            pawn_just_moved_double = None
+        return make_move
+
     elif piece == BISHOP:
         print(f"bishop check: {bishop_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
         return bishop_legal(p1, p2) and not is_check(new_table, piece_color)
@@ -511,7 +524,6 @@ def legal_move(p1, p2):
         if make_normal_move:
             king_moved[piece_color-1] = True  # Para comprobar la legalidad del enroque
         return make_normal_move
-
     elif piece == ROOK:
         make_move = rook_legal(p1, p2) and not is_check(new_table, piece_color)
         print(f"rook check: {rook_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")

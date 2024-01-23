@@ -48,6 +48,7 @@ w_rook = load_image("assets/w_rook.png", box_size)
 p_move = pygame.mixer.Sound("assets/p_move.wav")
 p_capture = pygame.mixer.Sound("assets/p_capture.wav")
 p_notify = pygame.mixer.Sound("assets/p_notify.wav")
+p_oh_my_god = pygame.mixer.Sound("assets/oh_my_god.wav")
 
 # Matrix ordered by constant values
 b_matrix = [None, b_pawn, b_rook, b_knight, b_bishop, b_king, b_queen]
@@ -130,9 +131,23 @@ while True:
                         change = True
 
                 elif table[column][row][0] != turn:
-                    if legal_move(from_box, to_box):
-                        selected = False
+                    move_type = legal_move(from_box, to_box)
+                    selected = False
+                    if move_type == "en passant":
+                        # Playing sound
+                        play_sound(p_oh_my_god)
 
+                        # Placing the pawn
+                        table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
+                        table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
+                        # Removing pawn from table
+                        table[from_box[0]][from_box[1]][0] = NO_ONE
+                        table[from_box[0]][from_box[1]][1] = EMPTY
+
+                        # Removing the pawn
+                        table[to_box[0]-1][to_box[1]][0] = NO_ONE
+                        table[to_box[0]-1][to_box[1]][1] = EMPTY
+                    elif move_type:
                         # Playing sound
                         if table[column][row][0] == c_matrix[turn]:
                             play_sound(p_capture)
