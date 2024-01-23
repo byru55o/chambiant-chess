@@ -201,43 +201,34 @@ def pawn_legal(p1, p2):
         print("pawn_check: can not move backwards")
         return False
 
-    # Checking for double move
-    if owner == BLACK and p1[0] == 6:
-        if table[p2[0]][p2[1]][0] != NO_ONE:
-            print("pawn_check: can not capture on double move")
-            return False
-        if abs(delta_column) > 2:
-            print("pawn_check: can not move more than 2 block")
-            return False
-    elif owner == WHITE and p1[0] == 1:
-        if table[p2[0]][p2[1]][0] != NO_ONE:
-            print("pawn_check: can not capture on double move")
-            return False
-        if abs(delta_column) > 2:
-            print("panw_check: can not move more than 2 blocks")
-            return False
+    s_box = [None,1,6]
+    o_color = [None,BLACK,WHITE]
 
-    # Checking for forward and diagonal capture 
-    else:
+    # Double move
+    if p1[0] == s_box[owner] and abs(delta_column) == 2:
+        if abs(delta_row) > 1:
+            return False
+        if table[p2[0]][p2[1]][0] != NO_ONE:
+            return False
+        return True
+
+    # Capture
+    if abs(delta_row) == 1:
+        if abs(delta_column) != 1:
+            return False
+        if table[p2[0]][p2[1]][0] != o_color[owner]:
+            return False
+        return True
+
+    # Simple move
+    if abs(delta_row) == 0:
         if abs(delta_column) > 1:
             return False
+        if table[p2[0]][p2[1]][0] != NO_ONE:
+            return False
+        return True
 
-        # Simple forward move
-        if abs(delta_row) == 0:
-            if table[p2[0]][p2[1]][0] != NO_ONE:
-                print("pawn_check: can not capture on forward move")
-                return False
-
-        # Diagonal capture
-        else:
-            if abs(delta_column/delta_row) != 1:
-                print("pawn_check: not moving in both axis equally")
-                return False
-            if table[p2[0]][p2[1]][0] == owner or table[p2[0]][p2[1]][0] == NO_ONE:
-                print("pawn_check: pawn needs to capture for diagonal move")
-                return False
-
-    return True
+    return False
 
 
 def king_legal(p1, p2):
