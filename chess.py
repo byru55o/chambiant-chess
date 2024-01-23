@@ -505,7 +505,7 @@ def legal_move(p1, p2):
         return queen_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == PAWN:
         if (pawn_just_moved_double == p2[1] and p1[0] == -piece_color+5 and p2[0] == -3*piece_color+8
-                and table[p2[0]-1][p2[1]] == [-piece_color+3, PAWN]):  # Si se cumplen las condiciones para en passant
+                and table[p2[0]+(2*piece_color-3)][p2[1]] == [-piece_color+3, PAWN]):  # Si se cumplen las condiciones para en passant
             return "en passant"
         make_move = pawn_legal(p1, p2) and not is_check(new_table, piece_color)
         print(f"pawn check: {pawn_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")

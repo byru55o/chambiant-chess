@@ -145,8 +145,8 @@ while True:
                         table[from_box[0]][from_box[1]][1] = EMPTY
 
                         # Removing the pawn
-                        table[to_box[0]-1][to_box[1]][0] = NO_ONE
-                        table[to_box[0]-1][to_box[1]][1] = EMPTY
+                        table[to_box[0]+(2*turn-3)][to_box[1]][0] = NO_ONE
+                        table[to_box[0]+(2*turn-3)][to_box[1]][1] = EMPTY
                     elif move_type:
                         # Playing sound
                         if table[column][row][0] == c_matrix[turn]:
