@@ -58,6 +58,8 @@ w_matrix = [None, w_pawn, w_rook, w_knight, w_bishop, w_king, w_queen]
 c_matrix = [None, BLACK, WHITE]
 
 # Main game loop
+running = True
+
 turn = WHITE
 change = False
 selected = False
@@ -66,7 +68,7 @@ to_box = (0, 0)
 
 king_position = (0,0)
 check = False
-while True:
+while running:
 
     # Draw base table
     for row in range(0, 8):
@@ -97,6 +99,8 @@ while True:
     # Handling clicks
     ev = pygame.event.get()
     for event in ev:
+        if event.type == pygame.QUIT:
+            running = False
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_position = pygame.mouse.get_pos()
             row = int(mouse_position[0] // box_size)
