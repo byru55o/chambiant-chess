@@ -28,7 +28,7 @@ table = MyTable()
 # ]
 def generate_new_table():
     for i in range(TABLE_SIZE[0]):
-        table.append([])
+        table.append(MyTable())
         for j in range(TABLE_SIZE[1]):
             table[i].append([0, 0])
 
