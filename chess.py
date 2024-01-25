@@ -207,7 +207,7 @@ def pawn_legal(p1, p2):
 
     # Double move
     if p1[0] == s_box[owner] and abs(delta_column) == 2:
-        if abs(delta_row) > 1:
+        if abs(delta_row) > 0:
             return False
         if table[p2[0]][p2[1]][0] != NO_ONE:
             return False
