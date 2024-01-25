@@ -1,4 +1,5 @@
 from chess import *
+import configparser
 import pygame
 
 
@@ -14,11 +15,20 @@ def play_sound(audio):
         pygame.time.wait(20)
 
 
+# Load config from config.ini
+config = configparser.ConfigParser()
+config.read("config.ini")
+config["CHESS"]
+FPS = int(config["CHESS"]["fps"])
+VOLUME = int(config["CHESS"]["volume"])
+RESOLUTION = int(config["CHESS"]["resolution"])
+
 pygame.mixer.init()
 pygame.init()
 
 clock = pygame.time.Clock()
 
+pygame.mixer.music.set_volume(VOLUME)
 screen_size = (RESOLUTION // 8) * 8
 pygame.display.set_caption("Pengüin Chess")
 screen = pygame.display.set_mode((screen_size, screen_size))
