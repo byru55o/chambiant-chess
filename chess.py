@@ -254,6 +254,9 @@ def king_legal(p1, p2):
     delta_column_s = sign(delta_column)
     delta_row = p2[1] - p1[1]
     delta_row_s = sign(delta_row)
+    opponent_i = king_pos(table, -owner + 3)[0]
+    opponent_j = king_pos(table, -owner+3)[1]
+    delta_kings = max(abs(opponent_i-p2[0]), abs(opponent_j-p2[1]))
 
     # Checking that it only moves one box
     if abs(delta_column) > 1:
@@ -261,6 +264,9 @@ def king_legal(p1, p2):
         return False
     if abs(delta_row) > 1:
         print("king_check: moving more than one box")
+        return False
+    # Checking that kings aren't touching
+    if delta_kings <= 1:
         return False
     return True
 
