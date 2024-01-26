@@ -136,7 +136,7 @@ while running:
     for event in ev:
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONUP:
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             mouse_position = pygame.mouse.get_pos()
             row = int(mouse_position[0] // box_size)
             column = int(7 - (mouse_position[1] // box_size))
