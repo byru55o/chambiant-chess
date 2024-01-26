@@ -78,7 +78,7 @@ turn = WHITE
 change = False
 selected = False
 pawn_promotion = False
-pawn_owner = None
+pawn_position = (None,None)
 from_box = (0, 0)
 to_box = (0, 0)
 
@@ -163,23 +163,7 @@ while running:
                         table[to_box[0]][to_box[1]][1] = EMPTY
 
                         print(table)
-                        change = True
-
-<<<<<<< HEAD
-                elif table[from_box[0]][from_box[1]][1] == PAWN and p_matrix[turn] == to_box[0]:
-                    print(p_matrix[turn])
-                    print(to_box[0])
-                    selected = False
-                    if legal_move(from_box,to_box):
-                        pawn_promotion = True
-                        pawn_position = turn
-                    
-                        table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
-                        table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
-
-                        table[from_box[0]][from_box[1]][0] = NO_ONE
-                        table[from_box[0]][from_box[1]][1] = EMPTY
-=======
+ 
                         # Getting if the king is in danger
                         check = is_check(table, c_matrix[turn])
                         if check:
@@ -187,7 +171,21 @@ while running:
 
                         # Change turn
                         change = True
->>>>>>> b2dec844182941f97dde1995e75d674e56c9d89d
+
+
+                elif table[from_box[0]][from_box[1]][1] == PAWN and p_matrix[turn] == to_box[0]:
+                    print(p_matrix[turn])
+                    print(to_box[0])
+                    selected = False
+                    if legal_move(from_box,to_box):
+                        pawn_promotion = True
+                        pawn_position = to_box
+                    
+                        table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
+                        table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
+
+                        table[from_box[0]][from_box[1]][0] = NO_ONE
+                        table[from_box[0]][from_box[1]][1] = EMPTY
 
                 elif table[column][row][0] != turn:
                     move_type = legal_move(from_box, to_box)
@@ -199,7 +197,6 @@ while running:
                         # Placing the pawn
                         table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
                         table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
-
                         # Removing pawn from table
                         table[from_box[0]][from_box[1]][0] = NO_ONE
                         table[from_box[0]][from_box[1]][1] = EMPTY
@@ -215,6 +212,7 @@ while running:
 
                         # Change turn
                         change = True
+
 
                     elif move_type:
                         # Playing sound
@@ -238,24 +236,23 @@ while running:
 
                         # Change turn
                         change = True
-<<<<<<< HEAD
                 else:
                     selected = False
             elif not pawn_promotion:
-=======
-                    else:
-                        selected = False
-            else:
->>>>>>> b2dec844182941f97dde1995e75d674e56c9d89d
                 if table[column][row][0] == turn:
                     selected = True
                     from_box = (column, row)
             elif pawn_promotion:
                 row = int(mouse_position[0] // box_size)
                 column = int(7 - ((mouse_position[1]+(box_size//2)) // box_size))
-                print(f"{column},{row}")
                 if column == 3 or column == 4:
                     if row in [2,3,4,5]:
+                        if row == 2: table[to_box[0]][to_box[1]] = [turn,QUEEN]
+                        if row == 3: table[to_box[0]][to_box[1]] = [turn,KNIGHT]
+                        if row == 4: table[to_box[0]][to_box[1]] = [turn,ROOK]
+                        if row == 5: table[to_box[0]][to_box[1]] = [turn,BISHOP]
+                        change = True
+                        pawn_promotion = False
                         selected = False
 
     # Switching turns
