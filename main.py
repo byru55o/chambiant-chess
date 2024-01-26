@@ -18,10 +18,10 @@ def play_sound(audio):
 # Load config from config.ini
 config = configparser.ConfigParser()
 config.read("config.ini")
-config["CHESS"]
 FPS = int(config["CHESS"]["fps"])
-VOLUME = int(config["CHESS"]["volume"])
+VOLUME = float(config["CHESS"]["volume"])
 RESOLUTION = int(config["CHESS"]["resolution"])
+MUSIC = float(config["CHESS"]["music"])
 
 pygame.mixer.init()
 pygame.init()
@@ -60,6 +60,10 @@ p_move = pygame.mixer.Sound("assets/p_move.wav")
 p_capture = pygame.mixer.Sound("assets/p_capture.wav")
 p_notify = pygame.mixer.Sound("assets/p_notify.wav")
 p_oh_my_god = pygame.mixer.Sound("assets/oh_my_god.wav")
+
+pygame.mixer.music.load("assets/tchaikovsky_1812_overture.wav")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(MUSIC)
 
 # Matrix ordered by constant values
 b_matrix = [None, b_pawn, b_rook, b_knight, b_bishop, b_king, b_queen]
@@ -187,6 +191,7 @@ while running:
                         table[from_box[0]][from_box[1]][0] = NO_ONE
                         table[from_box[0]][from_box[1]][1] = EMPTY
 
+                        play_sound(p_notify)
                 elif table[column][row][0] != turn:
                     move_type = legal_move(from_box, to_box)
                     selected = False
@@ -255,7 +260,7 @@ while running:
                         if check:
                             king_position = king_pos(table, c_matrix[turn])
 
-                        play_sound(p_capture)
+                        play_sound(p_move)
                         change = True
                         pawn_promotion = False
                         selected = False
