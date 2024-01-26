@@ -144,6 +144,14 @@ while running:
                         print(table)
                         change = True
 
+                        # Getting if the king is in danger
+                        check = is_check(table, c_matrix[turn])
+                        if check:
+                            king_position = king_pos(table, c_matrix[turn])
+
+                        # Change turn
+                        change = True
+
                 elif table[column][row][0] != turn:
                     move_type = legal_move(from_box, to_box)
                     selected = False
@@ -154,6 +162,7 @@ while running:
                         # Placing the pawn
                         table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
                         table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
+
                         # Removing pawn from table
                         table[from_box[0]][from_box[1]][0] = NO_ONE
                         table[from_box[0]][from_box[1]][1] = EMPTY
@@ -161,6 +170,15 @@ while running:
                         # Removing the pawn
                         table[to_box[0]+(2*turn-3)][to_box[1]][0] = NO_ONE
                         table[to_box[0]+(2*turn-3)][to_box[1]][1] = EMPTY
+
+                        # Getting if the king is in danger
+                        check = is_check(table, c_matrix[turn])
+                        if check:
+                            king_position = king_pos(table, c_matrix[turn])
+
+                        # Change turn
+                        change = True
+
                     elif move_type:
                         # Playing sound
                         if table[column][row][0] == c_matrix[turn]:
@@ -183,8 +201,8 @@ while running:
 
                         # Change turn
                         change = True
-                else:
-                    selected = False
+                    else:
+                        selected = False
             else:
                 if table[column][row][0] == turn:
                     selected = True
