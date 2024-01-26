@@ -165,6 +165,7 @@ while running:
                         print(table)
                         change = True
 
+<<<<<<< HEAD
                 elif table[from_box[0]][from_box[1]][1] == PAWN and p_matrix[turn] == to_box[0]:
                     print(p_matrix[turn])
                     print(to_box[0])
@@ -178,6 +179,15 @@ while running:
 
                         table[from_box[0]][from_box[1]][0] = NO_ONE
                         table[from_box[0]][from_box[1]][1] = EMPTY
+=======
+                        # Getting if the king is in danger
+                        check = is_check(table, c_matrix[turn])
+                        if check:
+                            king_position = king_pos(table, c_matrix[turn])
+
+                        # Change turn
+                        change = True
+>>>>>>> b2dec844182941f97dde1995e75d674e56c9d89d
 
                 elif table[column][row][0] != turn:
                     move_type = legal_move(from_box, to_box)
@@ -189,6 +199,7 @@ while running:
                         # Placing the pawn
                         table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
                         table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
+
                         # Removing pawn from table
                         table[from_box[0]][from_box[1]][0] = NO_ONE
                         table[from_box[0]][from_box[1]][1] = EMPTY
@@ -196,6 +207,15 @@ while running:
                         # Removing the pawn
                         table[to_box[0]+(2*turn-3)][to_box[1]][0] = NO_ONE
                         table[to_box[0]+(2*turn-3)][to_box[1]][1] = EMPTY
+
+                        # Getting if the king is in danger
+                        check = is_check(table, c_matrix[turn])
+                        if check:
+                            king_position = king_pos(table, c_matrix[turn])
+
+                        # Change turn
+                        change = True
+
                     elif move_type:
                         # Playing sound
                         if table[column][row][0] == c_matrix[turn]:
@@ -218,9 +238,15 @@ while running:
 
                         # Change turn
                         change = True
+<<<<<<< HEAD
                 else:
                     selected = False
             elif not pawn_promotion:
+=======
+                    else:
+                        selected = False
+            else:
+>>>>>>> b2dec844182941f97dde1995e75d674e56c9d89d
                 if table[column][row][0] == turn:
                     selected = True
                     from_box = (column, row)
