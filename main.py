@@ -251,6 +251,11 @@ while running:
                         if row == 3: table[to_box[0]][to_box[1]] = [turn,KNIGHT]
                         if row == 4: table[to_box[0]][to_box[1]] = [turn,ROOK]
                         if row == 5: table[to_box[0]][to_box[1]] = [turn,BISHOP]
+                        check = is_check(table, c_matrix[turn])
+                        if check:
+                            king_position = king_pos(table, c_matrix[turn])
+
+                        play_sound(p_capture)
                         change = True
                         pawn_promotion = False
                         selected = False
