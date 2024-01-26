@@ -38,6 +38,7 @@ box_size = screen_size / 8
 # Load assets
 s_background = load_image("assets/s_background.png", box_size)
 s_check = load_image("assets/s_check.png",box_size)
+s_promotion = load_image("assets/s_promotion.png",box_size)
 
 b_background = load_image("assets/b_background.png", box_size)
 b_bishop = load_image("assets/b_bishop.png", box_size)
@@ -67,12 +68,17 @@ w_matrix = [None, w_pawn, w_rook, w_knight, w_bishop, w_king, w_queen]
 # Turn change matrix
 c_matrix = [None, BLACK, WHITE]
 
+# Last pawn position matrix
+p_matrix = {2:0,1:7}
+
 # Main game loop
 running = True
 
 turn = WHITE
 change = False
 selected = False
+pawn_promotion = False
+pawn_owner = None
 from_box = (0, 0)
 to_box = (0, 0)
 
@@ -106,6 +112,21 @@ while running:
                 if owner == BLACK:
                     screen.blit(b_matrix[piece], (row * box_size, (7 - column) * box_size))
 
+    if pawn_promotion:
+        for i in range(0,8):
+            screen.blit(s_promotion, ((i)*box_size,int(3.5*box_size)))
+        for i in range(0,4):
+            if turn == WHITE:
+                if i == 0: screen.blit(w_queen, ((2+i)*box_size,int(3.5*box_size)))
+                if i == 1: screen.blit(w_knight, ((2+i)*box_size,int(3.5*box_size)))
+                if i == 2: screen.blit(w_rook, ((2+i)*box_size,int(3.5*box_size)))
+                if i == 3: screen.blit(w_bishop, ((2+i)*box_size,int(3.5*box_size)))
+            if turn == BLACK:
+                if i == 0: screen.blit(b_queen, ((2+i)*box_size,int(3.5*box_size)))
+                if i == 1: screen.blit(b_knight, ((2+i)*box_size,int(3.5*box_size)))
+                if i == 2: screen.blit(b_rook, ((2+i)*box_size,int(3.5*box_size)))
+                if i == 3: screen.blit(b_bishop, ((2+i)*box_size,int(3.5*box_size)))
+
     # Handling clicks
     ev = pygame.event.get()
     for event in ev:
@@ -116,7 +137,7 @@ while running:
             row = int(mouse_position[0] // box_size)
             column = int(7 - (mouse_position[1] // box_size))
             print(f"Clicked piece [{column},{row}]")
-            if selected:
+            if selected and not pawn_promotion:
                 to_box = (column, row)
                 if (table[from_box[0]][from_box[1]][1] == KING and table[column][row][1] == ROOK and
                         (table[from_box[0]][from_box[1]][0] == table[column][row][0])):
@@ -143,6 +164,20 @@ while running:
 
                         print(table)
                         change = True
+
+                elif table[from_box[0]][from_box[1]][1] == PAWN and p_matrix[turn] == to_box[0]:
+                    print(p_matrix[turn])
+                    print(to_box[0])
+                    selected = False
+                    if legal_move(from_box,to_box):
+                        pawn_promotion = True
+                        pawn_position = turn
+                    
+                        table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
+                        table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
+
+                        table[from_box[0]][from_box[1]][0] = NO_ONE
+                        table[from_box[0]][from_box[1]][1] = EMPTY
 
                 elif table[column][row][0] != turn:
                     move_type = legal_move(from_box, to_box)
@@ -185,10 +220,17 @@ while running:
                         change = True
                 else:
                     selected = False
-            else:
+            elif not pawn_promotion:
                 if table[column][row][0] == turn:
                     selected = True
                     from_box = (column, row)
+            elif pawn_promotion:
+                row = int(mouse_position[0] // box_size)
+                column = int(7 - ((mouse_position[1]+(box_size//2)) // box_size))
+                print(f"{column},{row}")
+                if column == 3 or column == 4:
+                    if row in [2,3,4,5]:
+                        selected = False
 
     # Switching turns
     if change:
