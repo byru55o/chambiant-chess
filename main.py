@@ -250,7 +250,7 @@ while running:
             elif pawn_promotion:
                 row = int(mouse_position[0] // box_size)
                 column = int(7 - ((mouse_position[1]+(box_size//2)) // box_size))
-                if column == 3 or column == 4:
+                if column == 3:
                     if row in [2,3,4,5]:
                         if row == 2: table[to_box[0]][to_box[1]] = [turn,QUEEN]
                         if row == 3: table[to_box[0]][to_box[1]] = [turn,KNIGHT]
