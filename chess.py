@@ -16,6 +16,7 @@ class MyTable(list):
 
 table = MyTable()
 
+
 # ruso
 # TO DO: remove testing lines
 
@@ -70,13 +71,13 @@ def king_pos(_table, color):
         try:
             king_j = column.index([color, KING])
             king_i = _table.index(column)
-        except:
+        except IndexError:
             pass
     return [king_i, king_j]
 
 
 # CHECK IF THERE IS A CHECK ON BOARD
-# True si lo está, False si no.
+# True si el Rey del color seleccionado está en jaque, False si no.
 def is_check(_table, color):
     king_i = king_pos(_table, color)[0]
     king_j = king_pos(_table, color)[1]
@@ -84,14 +85,6 @@ def is_check(_table, color):
     # COLUMNAS Y DIAGONALES - reinas, torres y alfiles
     for n in range(-3, 5):  # bucle de 8 iteraciones, cada una es una dirección
         for m in range(7):  # revisará como mucho 7 casillas en cada dirección
-            try:
-                if n != 4:
-                    tile = _table[king_i + sign(n) * (m + 1)][
-                        king_j + sign(-(n ** 2) + (7 / 2) * abs(n) - (5 / 2)) * (m + 1)]
-                else:  # Caso excepción -> columna hacia la derecha
-                    tile = _table[king_i][king_j + (m + 1)]
-            except IndexError:
-                break
             # la casilla que vamos a revisar se calcula de la siguiente manera:
             # N ES UN NÚMERO DEL -3 AL 4: en las 3 primeras iteraciones del bucle primario restaremos 1 a la coord. i
             # (ya que n será negativo), es decir, iremos verificando todas las casillas hacia abajo;
@@ -100,6 +93,14 @@ def is_check(_table, color):
             # la tercera en diagonal hacia la izquerda, la cuarta será hacia arriba, etc.
             # el único caso con el que no obtenemos lo que queremos es con n = 4, donde queremos que revise la dcha.
             # por eso multiplicamos por una expresión que es cero cuando n = 4 y uno de lo contrario.
+            try:
+                if n != 4:
+                    tile = _table[king_i + sign(n) * (m + 1)][
+                        king_j + sign(-(n ** 2) + (7 / 2) * abs(n) - (5 / 2)) * (m + 1)]
+                else:  # Caso excepción -> columna hacia la derecha
+                    tile = _table[king_i][king_j + (m + 1)]
+            except IndexError:  # Si nos salimos del tablero, pasamos a revisar otra dirección
+                break
             if abs(n) in range(2, 4):  # si lo que estamos comprobando es una diagonal
                 if tile[0] == (-color + 3) and (tile[1] == BISHOP or tile[1] == QUEEN):
                     # y lo que hay en la casilla es es un alfil o reina de color opuesto...
@@ -111,12 +112,14 @@ def is_check(_table, color):
                     return True
                 elif tile != [NO_ONE, EMPTY]:
                     break
-    # CABALLO (falta por explicar)
-    for n in range(8):
+    # CABALLO
+    for n in range(8):  # revisaremos los ocho posibles jaques de caballo
         try:
+            # dependiendo del número de iteración al índice i del Rey se le sumará o restará 1 o 2, lo mismo con la j.
+            # así obtenemos en cada iteración una casilla distinta, en la que podrá haber un caballo haciendo jaque.
             tile = _table[int(king_i + (1 / 2) * sign(n - 3.5) - (1 / 2) + ((n // 2) - 1))][
                 int(king_j + (2 * sign((n / 2) - (n // 2)) - 1) * ((sign(-abs(n - 3.5) + 2) / 2) + (3 / 2)))]
-        except IndexError:
+        except IndexError:  # si nos salimos del tablero, que siga probando
             continue
         if tile == [-color + 3, KNIGHT]:
             return True
@@ -190,9 +193,7 @@ def pawn_legal(p1, p2):
 
     # Calculating deltas
     delta_column = p2[0] - p1[0]
-    delta_column_s = sign(delta_column)
     delta_row = p2[1] - p1[1]
-    delta_row_s = sign(delta_row)
 
     # Checking it does not move backwards
     if owner == BLACK and delta_column > 0:
@@ -202,8 +203,8 @@ def pawn_legal(p1, p2):
         print("pawn_check: can not move backwards")
         return False
 
-    s_box = [None,1,6]
-    o_color = [None,BLACK,WHITE]
+    s_box = [None, 1, 6]
+    o_color = [None, BLACK, WHITE]
 
     # Double move
     if p1[0] == s_box[owner] and abs(delta_column) == 2:
@@ -251,12 +252,10 @@ def king_legal(p1, p2):
 
     # Calculating deltas
     delta_column = p2[0] - p1[0]
-    delta_column_s = sign(delta_column)
     delta_row = p2[1] - p1[1]
-    delta_row_s = sign(delta_row)
     opponent_i = king_pos(table, -owner + 3)[0]
-    opponent_j = king_pos(table, -owner+3)[1]
-    delta_kings = max(abs(opponent_i-p2[0]), abs(opponent_j-p2[1]))
+    opponent_j = king_pos(table, -owner + 3)[1]
+    delta_kings = max(abs(opponent_i - p2[0]), abs(opponent_j - p2[1]))
 
     # Checking that it only moves one box
     if abs(delta_column) > 1:
@@ -290,9 +289,7 @@ def knight_legal(p1, p2):
 
     # Calculating deltas
     delta_column = p2[0] - p1[0]
-    delta_column_s = sign(delta_column)
     delta_row = p2[1] - p1[1]
-    delta_row_s = sign(delta_row)
 
     # Checking if it is only moving in one axis
     if delta_column == 0 or delta_row == 0:
@@ -412,7 +409,6 @@ def castle(p1, p2):
     # Calculating deltas
     print("calculating deltas...")
     delta_column = p2[0] - p1[0]
-    delta_column_s = sign(delta_column)
     delta_row = p2[1] - p1[1]
     delta_row_s = sign(delta_row)
     # Checking for not horizontal moves
@@ -420,7 +416,7 @@ def castle(p1, p2):
         print("castle: owner not moving horizontally")
         return False
     # Checking that the king hasn't moved
-    if king_moved[owner-1]:
+    if king_moved[owner - 1]:
         print("castle: king has moved")
         return False
     # Checking that the king is not in check
@@ -431,28 +427,28 @@ def castle(p1, p2):
     print("castle: checking pieces in the way")
     for i in range(1, abs(delta_row)):
         c = int((i * delta_row_s) + p1[1])
-        if table[(owner-1)*7][c][0] != EMPTY:
+        if table[(owner - 1) * 7][c][0] != EMPTY:
             print("castle: there are pieces in the way")
             return False
     # Checks for LONG CASTLE
     if p2[1] == 0:
         print("castle: attempting a long castle")
         # Check whether the rook moved
-        if rook_moved[(owner-1)*2+1]:
+        if rook_moved[(owner - 1) * 2 + 1]:
             print("castle: the rook moved")
             return False
         # Check is_check in the two tiles at left of p1
         table_1 = deepcopy(table)
         table_1[p1[0]][p1[1]][0] = NO_ONE
         table_1[p1[0]][p1[1]][1] = EMPTY
-        table_1[p1[0]][p1[1]-1][0] = owner
-        table_1[p1[0]][p1[1]-1][1] = KING
+        table_1[p1[0]][p1[1] - 1][0] = owner
+        table_1[p1[0]][p1[1] - 1][1] = KING
 
         table_2 = deepcopy(table)
         table_2[p1[0]][p1[1]][0] = NO_ONE
         table_2[p1[0]][p1[1]][1] = EMPTY
-        table_2[p1[0]][p1[1]-2][0] = owner
-        table_2[p1[0]][p1[1]-2][1] = KING
+        table_2[p1[0]][p1[1] - 2][0] = owner
+        table_2[p1[0]][p1[1] - 2][1] = KING
         if is_check(table_1, owner) or is_check(table_2, owner):
             print("castle: the king passes through check")
             return False
@@ -464,22 +460,22 @@ def castle(p1, p2):
     elif p2[1] == 7:
         print("castle: attempting short castle")
         # Check whether the rook moved
-        if rook_moved[(owner-1)*2+1]:
+        if rook_moved[(owner - 1) * 2 + 1]:
             print("castle: the rook moved before")
             return False
         # Check is_check in the two tiles at right of p1
         table_1 = deepcopy(table)
         table_1[p1[0]][p1[1]][0] = NO_ONE
         table_1[p1[0]][p1[1]][1] = EMPTY
-        table_1[p1[0]][p1[1]+1][0] = owner
-        table_1[p1[0]][p1[1]+1][1] = KING
+        table_1[p1[0]][p1[1] + 1][0] = owner
+        table_1[p1[0]][p1[1] + 1][1] = KING
         print(table_1)
 
         table_2 = deepcopy(table)
         table_2[p1[0]][p1[1]][0] = NO_ONE
         table_2[p1[0]][p1[1]][1] = EMPTY
-        table_2[p1[0]][p1[1]+2][0] = owner
-        table_2[p1[0]][p1[1]+2][1] = KING
+        table_2[p1[0]][p1[1] + 2][0] = owner
+        table_2[p1[0]][p1[1] + 2][1] = KING
         if is_check(table_1, owner) or is_check(table_2, owner):
             print("castle: king passes through check")
             return False
@@ -510,12 +506,13 @@ def legal_move(p1, p2):
         print(f"queen check: {queen_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
         return queen_legal(p1, p2) and not is_check(new_table, piece_color)
     elif piece == PAWN:
-        if (pawn_just_moved_double == p2[1] and p1[0] == -piece_color+5 and p2[0] == -3*piece_color+8
-                and table[p2[0]+(2*piece_color-3)][p2[1]] == [-piece_color+3, PAWN]):  # Si se cumplen las condiciones para en passant
+        if (pawn_just_moved_double == p2[1] and p1[0] == -piece_color + 5 and p2[0] == -3 * piece_color + 8
+                and table[p2[0] + (2 * piece_color - 3)][p2[1]] == [-piece_color + 3, PAWN]):
+            # Si se cumplen las condiciones para en passant
             return "en passant"
         make_move = pawn_legal(p1, p2) and not is_check(new_table, piece_color)
         print(f"pawn check: {pawn_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
-        if make_move and abs(p2[0]-p1[0]) == 2:  # if it's a double move
+        if make_move and abs(p2[0] - p1[0]) == 2:  # if it's a double move
             pawn_just_moved_double = p1[1]  # for en passant
         else:
             pawn_just_moved_double = None
@@ -528,13 +525,13 @@ def legal_move(p1, p2):
         make_normal_move = king_legal(p1, p2) and not is_check(new_table, piece_color)
         print(f"king check: {king_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
         if make_normal_move:
-            king_moved[piece_color-1] = True  # Para comprobar la legalidad del enroque
+            king_moved[piece_color - 1] = True  # Para comprobar la legalidad del enroque
         return make_normal_move
     elif piece == ROOK:
         make_move = rook_legal(p1, p2) and not is_check(new_table, piece_color)
         print(f"rook check: {rook_legal(p1, p2)}\nis_check: {is_check(new_table, piece_color)}")
         if make_move and ((p1[0] == 0 or p1[0] == 7) and (p1[1] == 0 or p1[1] == 7)):  # [0,0] ; [0,7] ; [7,7]; [7,0]
-            rook_moved[int((2/7)*p1[0]+(1/7)*p1[1])] = True  # Para comprobar la legalidad del enroque
+            rook_moved[int((2 / 7) * p1[0] + (1 / 7) * p1[1])] = True  # Para comprobar la legalidad del enroque
             # 0x+0y = 0 ; 0x+7y = 1 ; 7x+0y = 2 ; 7x+7y = 3 => x = 2/7 ; y = 1/7
         return make_move
     return True
