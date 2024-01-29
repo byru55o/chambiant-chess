@@ -71,7 +71,7 @@ def king_pos(_table, color):
         try:
             king_j = column.index([color, KING])
             king_i = _table.index(column)
-        except IndexError:
+        except:
             pass
     return [king_i, king_j]
 
