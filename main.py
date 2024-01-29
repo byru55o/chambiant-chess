@@ -37,8 +37,8 @@ box_size = screen_size / 8
 
 # Load assets
 s_background = load_image("assets/s_background.png", box_size)
-s_check = load_image("assets/s_check.png",box_size)
-s_promotion = load_image("assets/s_promotion.png",box_size)
+s_check = load_image("assets/s_check.png", box_size)
+s_promotion = load_image("assets/s_promotion.png", box_size)
 
 b_background = load_image("assets/b_background.png", box_size)
 b_bishop = load_image("assets/b_bishop.png", box_size)
@@ -73,7 +73,7 @@ w_matrix = [None, w_pawn, w_rook, w_knight, w_bishop, w_king, w_queen]
 c_matrix = [None, BLACK, WHITE]
 
 # Last pawn position matrix
-p_matrix = {2:0,1:7}
+p_matrix = {2: 0, 1: 7}
 
 # Main game loop
 running = True
@@ -82,11 +82,11 @@ turn = WHITE
 change = False
 selected = False
 pawn_promotion = False
-pawn_position = (None,None)
+pawn_position = (None, None)
 from_box = (0, 0)
 to_box = (0, 0)
 
-king_position = (0,0)
+king_position = (0, 0)
 check = False
 while running:
 
@@ -117,19 +117,27 @@ while running:
                     screen.blit(b_matrix[piece], (row * box_size, (7 - column) * box_size))
 
     if pawn_promotion:
-        for i in range(0,8):
-            screen.blit(s_promotion, ((i)*box_size,int(3.5*box_size)))
-        for i in range(0,4):
+        for i in range(0, 8):
+            screen.blit(s_promotion, (i * box_size, int(3.5 * box_size)))
+        for i in range(0, 4):
             if turn == WHITE:
-                if i == 0: screen.blit(w_queen, ((2+i)*box_size,int(3.5*box_size)))
-                if i == 1: screen.blit(w_knight, ((2+i)*box_size,int(3.5*box_size)))
-                if i == 2: screen.blit(w_rook, ((2+i)*box_size,int(3.5*box_size)))
-                if i == 3: screen.blit(w_bishop, ((2+i)*box_size,int(3.5*box_size)))
+                if i == 0:
+                    screen.blit(w_queen, ((2 + i) * box_size, int(3.5 * box_size)))
+                if i == 1:
+                    screen.blit(w_knight, ((2 + i) * box_size, int(3.5 * box_size)))
+                if i == 2:
+                    screen.blit(w_rook, ((2 + i) * box_size, int(3.5 * box_size)))
+                if i == 3:
+                    screen.blit(w_bishop, ((2 + i) * box_size, int(3.5 * box_size)))
             if turn == BLACK:
-                if i == 0: screen.blit(b_queen, ((2+i)*box_size,int(3.5*box_size)))
-                if i == 1: screen.blit(b_knight, ((2+i)*box_size,int(3.5*box_size)))
-                if i == 2: screen.blit(b_rook, ((2+i)*box_size,int(3.5*box_size)))
-                if i == 3: screen.blit(b_bishop, ((2+i)*box_size,int(3.5*box_size)))
+                if i == 0:
+                    screen.blit(b_queen, ((2 + i) * box_size, int(3.5 * box_size)))
+                if i == 1:
+                    screen.blit(b_knight, ((2 + i) * box_size, int(3.5 * box_size)))
+                if i == 2:
+                    screen.blit(b_rook, ((2 + i) * box_size, int(3.5 * box_size)))
+                if i == 3:
+                    screen.blit(b_bishop, ((2 + i) * box_size, int(3.5 * box_size)))
 
     # Handling clicks
     ev = pygame.event.get()
@@ -155,19 +163,17 @@ while running:
                         play_sound(p_move)
 
                         # Placing king
-                        table[from_box[0]][from_box[1]+2*castle_squares][0] = table[from_box[0]][from_box[1]][0]
-                        table[from_box[0]][from_box[1]+2*castle_squares][1] = table[from_box[0]][from_box[1]][1]
+                        table[from_box[0]][from_box[1] + 2 * castle_squares][0] = table[from_box[0]][from_box[1]][0]
+                        table[from_box[0]][from_box[1] + 2 * castle_squares][1] = table[from_box[0]][from_box[1]][1]
                         table[from_box[0]][from_box[1]][0] = NO_ONE
                         table[from_box[0]][from_box[1]][1] = EMPTY
 
                         # Placing rook
-                        table[from_box[0]][from_box[1]+castle_squares][0] = table[column][row][0]
-                        table[from_box[0]][from_box[1]+castle_squares][1] = table[to_box[0]][to_box[1]][1]
+                        table[from_box[0]][from_box[1] + castle_squares][0] = table[column][row][0]
+                        table[from_box[0]][from_box[1] + castle_squares][1] = table[to_box[0]][to_box[1]][1]
                         table[to_box[0]][to_box[1]][0] = NO_ONE
                         table[to_box[0]][to_box[1]][1] = EMPTY
 
-                        print(table)
- 
                         # Getting if the king is in danger
                         check = is_check(table, c_matrix[turn])
                         if check:
@@ -176,15 +182,14 @@ while running:
                         # Change turn
                         change = True
 
-
                 elif table[from_box[0]][from_box[1]][1] == PAWN and p_matrix[turn] == to_box[0]:
                     print(p_matrix[turn])
                     print(to_box[0])
                     selected = False
-                    if legal_move(from_box,to_box):
+                    if legal_move(from_box, to_box):
                         pawn_promotion = True
                         pawn_position = to_box
-                    
+
                         table[to_box[0]][to_box[1]][0] = table[from_box[0]][from_box[1]][0]
                         table[to_box[0]][to_box[1]][1] = table[from_box[0]][from_box[1]][1]
 
@@ -207,8 +212,8 @@ while running:
                         table[from_box[0]][from_box[1]][1] = EMPTY
 
                         # Removing the pawn
-                        table[to_box[0]+(2*turn-3)][to_box[1]][0] = NO_ONE
-                        table[to_box[0]+(2*turn-3)][to_box[1]][1] = EMPTY
+                        table[to_box[0] + (2 * turn - 3)][to_box[1]][0] = NO_ONE
+                        table[to_box[0] + (2 * turn - 3)][to_box[1]][1] = EMPTY
 
                         # Getting if the king is in danger
                         check = is_check(table, c_matrix[turn])
@@ -217,7 +222,6 @@ while running:
 
                         # Change turn
                         change = True
-
 
                     elif move_type:
                         # Playing sound
@@ -249,13 +253,17 @@ while running:
                     from_box = (column, row)
             elif pawn_promotion:
                 row = int(mouse_position[0] // box_size)
-                column = int(7 - ((mouse_position[1]+(box_size//2)) // box_size))
+                column = int(7 - ((mouse_position[1] + (box_size // 2)) // box_size))
                 if column == 3:
-                    if row in [2,3,4,5]:
-                        if row == 2: table[to_box[0]][to_box[1]] = [turn,QUEEN]
-                        if row == 3: table[to_box[0]][to_box[1]] = [turn,KNIGHT]
-                        if row == 4: table[to_box[0]][to_box[1]] = [turn,ROOK]
-                        if row == 5: table[to_box[0]][to_box[1]] = [turn,BISHOP]
+                    if row in [2, 3, 4, 5]:
+                        if row == 2:
+                            table[to_box[0]][to_box[1]] = [turn, QUEEN]
+                        if row == 3:
+                            table[to_box[0]][to_box[1]] = [turn, KNIGHT]
+                        if row == 4:
+                            table[to_box[0]][to_box[1]] = [turn, ROOK]
+                        if row == 5:
+                            table[to_box[0]][to_box[1]] = [turn, BISHOP]
                         check = is_check(table, c_matrix[turn])
                         if check:
                             king_position = king_pos(table, c_matrix[turn])
