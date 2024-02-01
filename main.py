@@ -1,6 +1,7 @@
 from chess import *
 import configparser
 import pygame
+from random import randint
 
 
 def load_image(filename, size):
@@ -22,6 +23,7 @@ FPS = int(config["CHESS"]["fps"])
 VOLUME = float(config["CHESS"]["volume"])
 RESOLUTION = int(config["CHESS"]["resolution"])
 MUSIC = float(config["CHESS"]["music"])
+BOT = int(config["CHESS"]["bot"])
 
 pygame.mixer.init()
 pygame.init()
@@ -138,6 +140,30 @@ while running:
                     screen.blit(b_rook, ((2 + i) * box_size, int(3.5 * box_size)))
                 if i == 3:
                     screen.blit(b_bishop, ((2 + i) * box_size, int(3.5 * box_size)))
+
+    if turn == BOT:
+        found_initial = False
+        print("BOT IS GONNA MOVE")
+        while not found_initial:
+            piece = randint(1, 6)
+            for i in range(8):
+                if found_initial:
+                    break
+                _row = table[i]
+                print(f"{_row} = row [{i}]")
+                print(f"{piece} = piece")
+                for tile in _row:
+                    try:
+                        print(f"PIECE FOUND!!!!!!, COORDINATES ARE: i -> {i} ; j -> {_row.index([BOT,piece])}.")
+                        bot_initial_row = i
+                        bot_initial_column = _row.index([BOT, piece])
+                        found_initial = True
+                        break
+                    except ValueError:
+                        pass
+        found_final = False
+        while not found_final:
+            if legal_move([bot_initial_row, bot_initial_column], [])
 
     # Handling clicks
     ev = pygame.event.get()
