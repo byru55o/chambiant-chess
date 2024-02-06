@@ -22,12 +22,6 @@ Use examples liberally, and show the expected output if you can. It's helpful to
 ## Support
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-## Roadmap
-- Chess rules ✅
-- Simple I/O interactions ✅
-- GUI [DOING] \(main menu missing\)
-- Dumb Chess Bot
-
 ## Contributing
 State if you are open to contributions and what your requirements are for accepting them.
 
